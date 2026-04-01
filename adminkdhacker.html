@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D2 Admin Access</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #0d2542; --accent: #f1c40f; --bg: #f4f7f6; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg); display: flex; align-items: center; justify-content: center; height: 100vh; }
+        
+        .login-card { background: white; width: 90%; max-width: 400px; padding: 45px 35px; border-radius: 30px; box-shadow: 0 25px 60px rgba(0,0,0,0.1); position: relative; }
+        
+        /* Updated Logo style for D2 */
+        .kd-logo { 
+            position: absolute; top: -30px; left: 30px; 
+            background: var(--primary); width: 65px; height: 65px; 
+            border-radius: 22px; display: flex; align-items: center; 
+            justify-content: center; border: 3px solid var(--accent); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2); overflow: hidden;
+        }
+        .kd-logo img { width: 100%; height: 100%; object-fit: cover; }
+        
+        h2 { color: var(--primary); font-weight: 800; margin-bottom: 30px; margin-top: 10px; font-size: 22px; }
+        .input-group { margin-bottom: 20px; position: relative; }
+        .input-group i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 14px; }
+        input { width: 100%; padding: 16px 16px 16px 50px; border-radius: 15px; border: 2px solid #f1f1f1; outline: none; transition: 0.3s; font-size: 14px; font-weight: 600; }
+        input:focus { border-color: var(--primary); background: #fdfdfd; }
+        
+        .login-btn { width: 100%; background: var(--primary); color: white; padding: 18px; border: none; border-radius: 18px; font-weight: 700; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 25px rgba(13,37,66,0.2); font-size: 15px; letter-spacing: 1px; }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(13,37,66,0.3); }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <div class="kd-logo">
+        <img src="logo.png" alt="D2 Logo" onerror="this.outerHTML='<span style=\'color:#f1c40f;font-weight:800\'>D2</span>'">
+    </div>
+    <h2>Admin Dashboard Login</h2>
+    <div class="input-group">
+        <i class="fa-solid fa-envelope"></i>
+        <input type="email" id="adm-email" placeholder="Admin Email">
+    </div>
+    <div class="input-group">
+        <i class="fa-solid fa-lock"></i>
+        <input type="password" id="adm-pass" placeholder="Security Password">
+    </div>
+    <button class="login-btn" onclick="secureLogin()">ENTER DASHBOARD</button>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    // Your D2 INVEST Firebase Config
+    const firebaseConfig = {
+        apiKey: "AIzaSyDHjoV-8VeURo26qpor9b_ED41h3uATgG8",
+        authDomain: "d2-invest.firebaseapp.com",
+        projectId: "d2-invest",
+        storageBucket: "d2-invest.firebasestorage.app",
+        messagingSenderId: "809739613599",
+        appId: "1:809739613599:web:1415d8dc12c0d82f8af9aa",
+        measurementId: "G-SDKNQSC05G"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    window.secureLogin = async () => {
+        const email = document.getElementById('adm-email').value;
+        const pass = document.getElementById('adm-pass').value;
+
+        // Sirf authorized email hi koshish kar sakega
+        if(email !== "adminkd@gmail.com") {
+            return alert("Access Denied: Unauthorized Admin Email!");
+        }
+
+        try {
+            // Yeh password ko Firebase server par verify karega
+            const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+            
+            // Login successful hone par hi dashboard pe jayega
+            localStorage.setItem('d2_admin_access', 'granted');
+            window.location.href = "admin-dashboard.html";
+        } catch (e) {
+            console.error(e);
+            alert("Security Alert: Invalid Password or Network Error!");
+        }
+    }
+</script>
+</body>
+</html>
