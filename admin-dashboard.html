@@ -143,28 +143,23 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, doc, updateDoc, increment, query, where, writeBatch, serverTimestamp, getDocs, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, doc, updateDoc, increment, query, where, writeBatch, serverTimestamp, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // UPDATED FIREBASE CONFIG FOR D2-INVEST
     const firebaseConfig = {
         apiKey: "AIzaSyDHjoV-8VeURo26qpor9b_ED41h3uATgG8",
         authDomain: "d2-invest.firebaseapp.com",
         projectId: "d2-invest",
         storageBucket: "d2-invest.firebasestorage.app",
         messagingSenderId: "809739613599",
-        appId: "1:809739613599:web:1415d8dc12c0d82f8af9aa",
-        measurementId: "G-SDKNQSC05G"
+        appId: "1:809739613599:web:1415d8dc12c0d82f8af9aa"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // SECURITY CHECK: Only Admin allowed
     onAuthStateChanged(auth, (user) => {
-        if (!user || user.email !== "adminkd@gmail.com") {
-            window.location.href = "adminlogin.html";
-        }
+        if (!user || user.email !== "adminkd@gmail.com") window.location.href = "adminlogin.html";
     });
 
     window.switchTab = (tabId, el) => {
@@ -174,8 +169,8 @@
         el.classList.add('active');
     };
 
-    // Dashboard Stats
-    onSnapshot(query(collection(db, "deposits"), where("status", "==", "Approved")), (snap) => {
+    // Stats - Modified to look for 'success' status
+    onSnapshot(query(collection(db, "deposits"), where("status", "==", "success")), (snap) => {
         let total = 0, today = 0;
         const startOfDay = new Date().setHours(0,0,0,0);
         snap.forEach(d => {
@@ -188,6 +183,7 @@
         document.getElementById('today-dep-sum').innerText = "₹" + today;
     });
 
+    // Users Logic
     onSnapshot(collection(db, "users"), snap => {
         document.getElementById('total-users').innerText = snap.size;
         const body = document.getElementById('users-table-body');
@@ -205,22 +201,6 @@
             </tr>`;
         });
     });
-
-    window.deleteUserAccount = async (uid) => {
-        if(!confirm("Warning! User ka sara data permanent delete ho jayega. Continue?")) return;
-        try {
-            const batch = writeBatch(db);
-            batch.delete(doc(db, "users", uid));
-            const collectionsToDelete = ["investments", "transactions", "deposits", "withdrawals"];
-            for (const colName of collectionsToDelete) {
-                const q = query(collection(db, colName), where("uid", "==", uid));
-                const qSnap = await getDocs(q);
-                qSnap.forEach(d => batch.delete(d.ref));
-            }
-            await batch.commit();
-            alert("User Deleted Successfully!");
-        } catch (e) { alert("Error deleting user."); }
-    };
 
     window.viewUser = async (uid) => {
         document.getElementById('userModal').style.display = 'block';
@@ -244,7 +224,7 @@
 
     window.closeModal = () => document.getElementById('userModal').style.display = 'none';
 
-    // Deposits Approval logic
+    // Deposit Approval - UPDATED LOGIC
     onSnapshot(query(collection(db, "deposits"), where("status", "==", "Pending")), snap => {
         const body = document.getElementById('dep-table-body');
         body.innerHTML = "";
@@ -263,27 +243,20 @@
     });
 
     window.approveDep = async (docId, uid, amt) => {
+        if(!confirm("Approve this deposit?")) return;
         try {
             const batch = writeBatch(db);
-            batch.update(doc(db, "users", uid), { balance: increment(amt) });
-            batch.update(doc(db, "deposits", docId), { status: "Approved", timestamp: serverTimestamp() });
-            
-            const transRef = doc(db, "transactions", docId); 
-            batch.set(transRef, {
-                uid: uid,
-                amount: amt,
-                type: "Deposit",
-                status: "Success",
-                timestamp: serverTimestamp(),
-                refId: docId
-            });
+            // 1. Update user balance in 'users' collection
+            batch.update(doc(db, "users", uid), { balance: increment(Number(amt)) });
+            // 2. Mark deposit as 'success'
+            batch.update(doc(db, "deposits", docId), { status: "success", timestamp: serverTimestamp() });
             
             await batch.commit();
             alert("Payment Approved! Balance Added.");
-        } catch (e) { alert("Error approving deposit."); }
+        } catch (e) { alert("Error: " + e.message); }
     };
 
-    // Withdrawals logic
+    // Withdrawal Logic
     onSnapshot(query(collection(db, "withdrawals"), where("status", "==", "Pending")), snap => {
         const body = document.getElementById('with-table-body');
         body.innerHTML = "";
@@ -309,26 +282,26 @@
         try {
             const batch = writeBatch(db);
             batch.update(doc(db, "withdrawals", id), { status: stat });
-            if(stat === 'Rejected' && uid) batch.update(doc(db, "users", uid), { balance: increment(amt) });
-            
-            const transRef = doc(db, "transactions", id);
-            batch.set(transRef, {
-                uid: uid,
-                amount: amt,
-                type: "Withdrawal",
-                status: stat,
-                timestamp: serverTimestamp(),
-                refId: id
-            });
-            
+            if(stat === 'Rejected' && uid) batch.update(doc(db, "users", uid), { balance: increment(Number(amt)) });
             await batch.commit();
-            alert("Withdrawal Status Updated!");
-        } catch (e) { alert("Error processing withdrawal."); }
+            alert("Withdrawal Updated!");
+        } catch (e) { alert("Error."); }
     };
 
     window.rejectReq = async (coll, id) => {
-        await updateDoc(doc(db, coll, id), { status: "Rejected" });
-        alert("Request Rejected!");
+        if(!confirm("Reject this?")) return;
+        await updateDoc(doc(db, coll, id), { status: "rejected" });
+        alert("Rejected!");
+    };
+
+    window.deleteUserAccount = async (uid) => {
+        if(!confirm("Permanent delete user?")) return;
+        try {
+            const batch = writeBatch(db);
+            batch.delete(doc(db, "users", uid));
+            await batch.commit();
+            alert("User Deleted!");
+        } catch (e) { alert("Error."); }
     };
 
     window.adminLogout = () => { signOut(auth); window.location.href = "adminlogin.html"; };
