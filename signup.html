@@ -311,7 +311,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // Aapka same config
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDHjoV-8VeURo26qpor9b_ED41h3uATgG8",
             authDomain: "d2-invest.firebaseapp.com",
@@ -349,8 +349,11 @@
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 console.log("Success:", userCredential.user);
                 submitBtn.innerText = "Success! Redirecting...";
-                alert("Welcome to D2 Invest! Your professional portfolio is ready.");
-                window.location.href = "dashboard.html"; 
+                alert("Account created successfully! Please login to continue.");
+                
+                // Redirecting to login.html as requested
+                window.location.href = "login.html"; 
+                
             } catch (error) {
                 let cleanError = error.message.replace("Firebase: ", "");
                 showError(cleanError);
