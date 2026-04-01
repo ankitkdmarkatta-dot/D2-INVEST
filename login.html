@@ -223,7 +223,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDHjoV-8VeURo26qpor9b_ED41h3uATgG8",
@@ -237,6 +237,13 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+
+        // --- BRAHMASTRA: Purana session clean karne ke liye ---
+        signOut(auth).then(() => {
+            localStorage.clear();
+            sessionStorage.clear();
+            console.log("Purana ghost session clear ho gaya.");
+        }).catch((err) => console.log("Signout error:", err));
 
         const loginForm = document.getElementById('loginForm');
         const errorMsg = document.getElementById('error-msg');
@@ -252,7 +259,7 @@
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                window.location.href = "home.html"; // Redirect to home.html
+                window.location.href = "home.html"; 
             } catch (error) {
                 errorMsg.innerText = "Invalid credentials. Please try again.";
                 errorMsg.style.display = 'block';
