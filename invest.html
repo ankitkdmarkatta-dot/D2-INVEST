@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invest | D2 INVEST</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #0d2542;
+            --accent: #f1c40f;
+            --bg-gradient: linear-gradient(135deg, #0d2542 0%, #1a4a80 100%);
+            --white: #ffffff;
+            --text-muted: #64748b;
+            --success: #10b981;
+            --hot: #ff4757;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: #f4f7f6; padding-bottom: 100px; }
+
+        header {
+            background: var(--white); padding: 12px 20px;
+            display: flex; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky; top: 0; z-index: 1000;
+        }
+
+        /* Logo Round Shape Styles */
+        .logo-container {
+            width: 45px; height: 45px; 
+            border-radius: 50%; background: var(--accent); 
+            margin-right: 12px; padding: 2px;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+        .logo-inner {
+            width: 100%; height: 100%; background: #fff;
+            border-radius: 50%; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .logo-inner img { 
+            width: 100%; height: 100%; 
+            object-fit: cover;
+            border-radius: 50%; 
+        }
+
+        .tab-container { display: flex; gap: 10px; padding: 20px; max-width: 500px; margin: 0 auto; }
+        .tab-btn {
+            flex: 1; padding: 14px; border: none; border-radius: 15px;
+            font-weight: 700; cursor: pointer; transition: 0.3s;
+            background: #e2e8f0; color: var(--primary);
+        }
+        .tab-btn.active { background: var(--bg-gradient); color: white; transform: scale(1.02); box-shadow: 0 5px 15px rgba(13,37,66,0.2); }
+
+        .plans-grid { display: grid; grid-template-columns: 1fr; gap: 20px; padding: 0 15px; max-width: 500px; margin: 0 auto; }
+        
+        .plan-card {
+            background: white; border-radius: 25px; overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06); animation: slideUp 0.5s ease-out;
+            border: 1px solid rgba(0,0,0,0.03); margin-bottom: 15px;
+            position: relative;
+        }
+        .badge {
+            position: absolute; top: 15px; right: 15px;
+            background: var(--hot); color: white; padding: 5px 12px;
+            border-radius: 20px; font-size: 10px; font-weight: 800;
+            z-index: 10; text-transform: uppercase;
+        }
+        .plan-img { width: 100%; height: 180px; object-fit: cover; background: #e2e8f0; display: block; }
+        .plan-details { padding: 18px; }
+        .plan-title { font-size: 19px; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
+        
+        .plan-info { display: flex; justify-content: space-between; background: #f8fafc; padding: 12px; border-radius: 15px; }
+        .info-item span { display: block; font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+        .info-item b { font-size: 15px; color: #1e293b; }
+
+        .buy-btn {
+            width: 100%; background: var(--accent); border: none;
+            padding: 14px; border-radius: 15px; margin-top: 15px;
+            font-weight: 800; color: var(--primary); cursor: pointer;
+            box-shadow: 0 4px 10px rgba(241, 196, 15, 0.3); transition: 0.2s;
+        }
+        .buy-btn:active { transform: scale(0.98); }
+
+        .modal {
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.8);
+            align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-content {
+            background: white; width: 100%; max-width: 380px;
+            border-radius: 30px; padding: 30px; text-align: center;
+            animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-detail-box {
+            background: #f1f5f9; border-radius: 20px; padding: 20px;
+            margin: 20px 0; text-align: left;
+        }
+        .modal-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+        .modal-row span { color: #64748b; }
+        .modal-row b { color: var(--primary); }
+        
+        .confirm-buy-btn {
+            width: 100%; padding: 16px; background: var(--primary); color: white;
+            border: none; border-radius: 15px; font-weight: 700; cursor: pointer;
+        }
+
+        #success-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; z-index: 3000; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+        }
+        .success-circle {
+            width: 100px; height: 100px; background: var(--success);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 50px; margin-bottom: 20px;
+            animation: scaleCheck 0.5s ease-out forwards;
+        }
+
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: white; height: 75px; display: flex;
+            justify-content: space-around; align-items: center;
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.08); z-index: 1000;
+        }
+        .nav-link { text-decoration: none; color: #94a3b8; text-align: center; flex: 1; }
+        .nav-link i { font-size: 22px; display: block; margin-bottom: 4px; }
+        .nav-link span { font-size: 11px; font-weight: 600; }
+        .nav-link.active { color: var(--primary); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes scaleCheck { 0% { transform: scale(0); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <div class="logo-inner">
+                <img src="D2 logo.png" alt="D2">
+            </div>
+        </div>
+        <div style="font-weight: 800; color: var(--primary); font-size: 18px; letter-spacing: 0.5px;">D2 INVEST</div>
+    </header>
+
+    <div class="tab-container">
+        <button class="tab-btn active" id="buy-btn-tab" onclick="showTab('buy')">Investment Plans</button>
+        <button class="tab-btn" id="active-btn-tab" onclick="showTab('active')">My Active Plans</button>
+    </div>
+
+    <div id="buy-plans-section" class="plans-grid">
+        <div class="plan-card">
+            <img src="https://images.pexels.com/photos/379419/pexels-photo-379419.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">Fuel Mini</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹200</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹100</b></div>
+                    <div class="info-item"><span>Days</span><b>10 Days</b></div>
+                </div>
+                <button class="buy-btn" onclick="openModal('Fuel Mini', 200, 100, 10, 1000)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <div class="badge" style="background:#e23744;">New</div>
+            <img src="https://images.pexels.com/photos/4393426/pexels-photo-4393426.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">Zomato Special</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹250</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹175</b></div>
+                    <div class="info-item"><span>Days</span><b>2 Days</b></div>
+                </div>
+                <button class="buy-btn" style="background:#e23744; color:white;" onclick="openModal('Zomato Special', 250, 175, 2, 350)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <img src="https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">AI For Future</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹399</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹133</b></div>
+                    <div class="info-item"><span>Days</span><b>12 Days</b></div>
+                </div>
+                <button class="buy-btn" onclick="openModal('AI For Future', 399, 133, 12, 1600)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <img src="https://images.pexels.com/photos/4391470/pexels-photo-4391470.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">Delivery Pro</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹500</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹200</b></div>
+                    <div class="info-item"><span>Days</span><b>5 Days</b></div>
+                </div>
+                <button class="buy-btn" onclick="openModal('Delivery Pro', 500, 200, 5, 1000)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <div class="badge" style="background:#0d2542;">Exclusive</div>
+            <img src="https://images.pexels.com/photos/1703314/pexels-photo-1703314.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">Petrol Pro</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹500</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹194</b></div>
+                    <div class="info-item"><span>Days</span><b>18 Days</b></div>
+                </div>
+                <button class="buy-btn" onclick="openModal('Petrol Pro', 500, 194, 18, 3492)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <div class="badge" style="background:#10b981;">Hot</div>
+            <img src="https://images.pexels.com/photos/6169668/pexels-photo-6169668.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">Fast Grocery</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹750</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹250</b></div>
+                    <div class="info-item"><span>Days</span><b>6 Days</b></div>
+                </div>
+                <button class="buy-btn" onclick="openModal('Fast Grocery', 750, 250, 6, 1500)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <div class="badge">Popular</div>
+            <img src="https://images.pexels.com/photos/3183158/pexels-photo-3183158.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">Corporate Tech</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹999</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹180</b></div>
+                    <div class="info-item"><span>Days</span><b>12 Days</b></div>
+                </div>
+                <button class="buy-btn" onclick="openModal('Corporate Tech', 999, 180, 12, 2160)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <div class="badge" style="background:#3b82f6;">Premium</div>
+            <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=500&q=80" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">Smart Logistics</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹1100</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹210</b></div>
+                    <div class="info-item"><span>Days</span><b>20 Days</b></div>
+                </div>
+                <button class="buy-btn" onclick="openModal('Smart Logistics', 1100, 210, 20, 4200)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <img src="https://images.pexels.com/photos/1148820/pexels-photo-1148820.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">Cloud Server Hub</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹1350</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹280</b></div>
+                    <div class="info-item"><span>Days</span><b>15 Days</b></div>
+                </div>
+                <button class="buy-btn" onclick="openModal('Cloud Server Hub', 1350, 280, 15, 4200)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <div class="badge">Efficiency</div>
+            <img src="https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">Robotics Alpha</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹1500</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹437.5</b></div>
+                    <div class="info-item"><span>Days</span><b>8 Days</b></div>
+                </div>
+                <button class="buy-btn" onclick="openModal('Robotics Alpha', 1500, 437.5, 8, 3500)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <div class="badge" style="background:#f97316;">Growth</div>
+            <img src="https://images.pexels.com/photos/34577/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">E-Commerce Titan</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹1600</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹350</b></div>
+                    <div class="info-item"><span>Days</span><b>12 Days</b></div>
+                </div>
+                <button class="buy-btn" onclick="openModal('E-Commerce Titan', 1600, 350, 12, 4200)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <img src="https://images.pexels.com/photos/6770610/pexels-photo-6770610.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">Data Mining Unit</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹1850</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹450</b></div>
+                    <div class="info-item"><span>Days</span><b>10 Days</b></div>
+                </div>
+                <button class="buy-btn" onclick="openModal('Data Mining Unit', 1850, 450, 10, 4500)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <div class="badge" style="background:#8b5cf6;">High ROI</div>
+            <img src="https://images.pexels.com/photos/6770611/pexels-photo-6770611.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">FinTech Global</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹1999</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹520</b></div>
+                    <div class="info-item"><span>Days</span><b>10 Days</b></div>
+                </div>
+                <button class="buy-btn" onclick="openModal('FinTech Global', 1999, 520, 10, 5200)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <div class="badge">Vip Plan</div>
+            <img src="https://images.pexels.com/photos/356036/pexels-photo-356036.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">Green Energy</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹5000</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹1250</b></div>
+                    <div class="info-item"><span>Days</span><b>20 Days</b></div>
+                </div>
+                <button class="buy-btn" onclick="openModal('Green Energy', 5000, 1250, 20, 25000)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <img src="https://images.pexels.com/photos/586030/pexels-photo-586030.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">SpaceX Satellite</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹8000</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹2500</b></div>
+                    <div class="info-item"><span>Days</span><b>15 Days</b></div>
+                </div>
+                <button class="buy-btn" style="background: #2575fc; color: white;" onclick="openModal('SpaceX Satellite', 8000, 2500, 15, 37500)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <img src="https://images.pexels.com/photos/1261824/pexels-photo-1261824.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">Metaverse Land</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹12000</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹4500</b></div>
+                    <div class="info-item"><span>Days</span><b>10 Days</b></div>
+                </div>
+                <button class="buy-btn" style="background: #bc4e9c; color: white;" onclick="openModal('Metaverse Land', 12000, 4500, 10, 45000)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <div class="badge" style="background:gold; color:black;">Elite</div>
+            <img src="https://images.pexels.com/photos/1036936/pexels-photo-1036936.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">Quantum Core</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹20000</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹10000</b></div>
+                    <div class="info-item"><span>Days</span><b>7 Days</b></div>
+                </div>
+                <button class="buy-btn" style="background: #000; color: #f1c40f;" onclick="openModal('Quantum Core', 20000, 10000, 7, 70000)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <img src="https://images.pexels.com/photos/110844/pexels-photo-110844.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">Tesla EV Node</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹35000</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹15000</b></div>
+                    <div class="info-item"><span>Days</span><b>12 Days</b></div>
+                </div>
+                <button class="buy-btn" onclick="openModal('Tesla EV Node', 35000, 15000, 12, 180000)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <img src="https://images.pexels.com/photos/2566581/pexels-photo-2566581.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">Oil Rig Empire</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹50000</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹25000</b></div>
+                    <div class="info-item"><span>Days</span><b>30 Days</b></div>
+                </div>
+                <button class="buy-btn" style="background: #1a4a80; color: white;" onclick="openModal('Oil Rig Empire', 50000, 25000, 30, 750000)">ACTIVATE NOW</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="active-plans-section" style="display:none;">
+        <div id="active-list" class="plans-grid"></div>
+        <div id="no-active" style="text-align:center; padding:50px; color:#94a3b8;">
+            <i class="fa-solid fa-folder-open" style="font-size:60px; margin-bottom:15px;"></i>
+            <p>Koi active plan nahi mila.<br>Investment shuru karein!</p>
+        </div>
+    </div>
+
+    <div class="modal" id="order-modal">
+        <div class="modal-content">
+            <div style="font-size:50px; color:var(--accent); margin-bottom:10px;"><i class="fa-solid fa-bolt-lightning"></i></div>
+            <h2 style="color:var(--primary);">Confirm Order</h2>
+            <div class="modal-detail-box">
+                <div class="modal-row"><span>Plan Name:</span><b id="m-name">-</b></div>
+                <div class="modal-row"><span>Investment:</span><b id="m-price">₹0</b></div>
+                <div class="modal-row"><span>Daily Income:</span><b id="m-daily">₹0</b></div>
+                <div class="modal-row"><span>Total Returns:</span><b id="m-total" style="color:var(--success);">₹0</b></div>
+                <div class="modal-row"><span>Validity:</span><b id="m-days">0 Days</b></div>
+            </div>
+            <button class="confirm-buy-btn" id="confirm-buy-btn">CONFIRM & ACTIVATE</button>
+            <p onclick="closeModal()" style="margin-top:15px; color:#ef4444; font-weight:600; cursor:pointer;">Cancel</p>
+        </div>
+    </div>
+
+    <div id="success-overlay">
+        <div class="success-circle"><i class="fa-solid fa-check"></i></div>
+        <h2 style="color:var(--primary); font-weight:800;">Plan Activated!</h2>
+        <p style="color:var(--text-muted); margin-top:10px;">Investment shuru ho chuka hai.</p>
+        <button class="confirm-buy-btn" onclick="hideSuccess()" style="width:200px; margin-top:30px;">Great!</button>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="home.html" class="nav-link"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="invest.html" class="nav-link active"><i class="fa-solid fa-chart-pie"></i><span>Invest</span></a>
+        <a href="refer.html" class="nav-link"><i class="fa-solid fa-gift"></i><span>Refer</span></a>
+        <a href="account.html" class="nav-link"><i class="fa-solid fa-user-gear"></i><span>Account</span></a>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, arrayUnion, onSnapshot, increment, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // UPDATED FIREBASE CONFIG (d2-invest)
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7N9S9Xf3QY4vR5L8W2Z1M0P4K7J2G5H",
+            authDomain: "d2-invest.firebaseapp.com",
+            projectId: "d2-invest",
+            storageBucket: "d2-invest.firebasestorage.app",
+            messagingSenderId: "555123456789",
+            appId: "1:555123456789:web:abcdef1234567890"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let pData = {};
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) { currentUser = user; loadActivePlans(); } 
+            else { window.location.href = "login.html"; }
+        });
+
+        window.showTab = (tab) => {
+            document.getElementById('buy-plans-section').style.display = tab === 'buy' ? 'grid' : 'none';
+            document.getElementById('active-plans-section').style.display = tab === 'active' ? 'block' : 'none';
+            document.getElementById('buy-btn-tab').classList.toggle('active', tab === 'buy');
+            document.getElementById('active-btn-tab').classList.toggle('active', tab === 'active');
+        }
+
+        window.openModal = (name, price, daily, days, total) => {
+            pData = { name, price, daily, days, total };
+            document.getElementById('m-name').innerText = name;
+            document.getElementById('m-price').innerText = "₹" + price;
+            document.getElementById('m-daily').innerText = "₹" + daily;
+            document.getElementById('m-total').innerText = "₹" + total;
+            document.getElementById('m-days').innerText = days + " Days";
+            document.getElementById('order-modal').style.display = 'flex';
+        }
+
+        window.closeModal = () => { document.getElementById('order-modal').style.display = 'none'; }
+        window.hideSuccess = () => { document.getElementById('success-overlay').style.display = 'none'; showTab('active'); }
+
+        document.getElementById('confirm-buy-btn').onclick = async () => {
+            const btn = document.getElementById('confirm-buy-btn');
+            btn.disabled = true; btn.innerText = "Activating...";
+
+            try {
+                const userRef = doc(db, "users", currentUser.uid);
+                const snap = await getDoc(userRef);
+
+                if (!snap.exists()) { alert("User record not found."); btn.disabled = false; return; }
+
+                const userData = snap.data();
+                if ((userData.balance || 0) >= pData.price) {
+                    await updateDoc(userRef, {
+                        balance: increment(-pData.price),
+                        totalInvested: increment(pData.price),
+                        activePlans: arrayUnion({ 
+                            name: pData.name, 
+                            daily: parseFloat(pData.daily), 
+                            days: pData.days,
+                            purchaseDate: new Date().toISOString(),
+                            status: 'active'
+                        })
+                    });
+
+                    if (userData.referredBy) {
+                        const refCode = userData.referredBy.toUpperCase();
+                        const q = query(collection(db, "users"), where("myReferralCode", "==", refCode));
+                        const qSnap = await getDocs(q);
+                        if (!qSnap.empty) {
+                            const inviterRef = doc(db, "users", qSnap.docs[0].id);
+                            if (!userData.activePlans || userData.activePlans.length === 0) {
+                                await updateDoc(inviterRef, {
+                                    balance: increment(50),
+                                    totalEarnings: increment(50)
+                                });
+                            }
+                        }
+                    }
+
+                    document.getElementById('success-overlay').style.display = 'flex';
+                    closeModal();
+                } else {
+                    alert("Insufficient Balance! Please recharge.");
+                }
+            } catch (e) {
+                alert("Error: " + e.message);
+            }
+            btn.disabled = false; btn.innerText = "CONFIRM & ACTIVATE";
+        }
+
+        function loadActivePlans() {
+            onSnapshot(doc(db, "users", currentUser.uid), (snap) => {
+                const list = document.getElementById('active-list');
+                const noActive = document.getElementById('no-active');
+                list.innerHTML = "";
+                if(!snap.exists()) return;
+                const data = snap.data();
+                if (data.activePlans && data.activePlans.length > 0) {
+                    noActive.style.display = "none";
+                    data.activePlans.forEach(p => {
+                        list.innerHTML += `
+                        <div class="plan-card" style="border-left: 5px solid var(--success); padding:20px;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div class="plan-title">${p.name} <span style="font-size:10px; color:green;">● ACTIVE</span></div>
+                                <i class="fa-solid fa-circle-check" style="color:var(--success);"></i>
+                            </div>
+                            <div class="plan-info">
+                                <div class="info-item"><span>Daily Profit</span><b style="color:var(--success);">₹${p.daily}</b></div>
+                                <div class="info-item"><span>Status</span><b style="color:#10b981;">Earning</b></div>
+                            </div>
+                            <div style="margin-top:10px; font-size:10px; color:#94a3b8;">Date: ${new Date(p.purchaseDate).toLocaleDateString()}</div>
+                        </div>`;
+                    });
+                } else { noActive.style.display = "block"; }
+            });
+        }
+    </script>
+</body>
+</html>
