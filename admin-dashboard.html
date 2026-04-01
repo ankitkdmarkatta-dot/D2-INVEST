@@ -163,7 +163,7 @@
         if (!user || user.email !== "adminkd@gmail.com") window.location.href = "adminlogin.html";
     });
 
-    // Tab Logic
+    // Tab Switching
     window.switchTab = (tabId, el) => {
         document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
@@ -171,7 +171,7 @@
         el.classList.add('active');
     };
 
-    // Dashboard Stats
+    // Stats Logic
     onSnapshot(query(collection(db, "deposits"), where("status", "==", "success")), (snap) => {
         let total = 0, today = 0;
         const startOfDay = new Date().setHours(0,0,0,0);
@@ -185,7 +185,7 @@
         document.getElementById('today-dep-sum').innerText = "₹" + today;
     });
 
-    // Users List
+    // Users List Logic
     onSnapshot(collection(db, "users"), snap => {
         document.getElementById('total-users').innerText = snap.size;
         const body = document.getElementById('users-table-body');
@@ -204,7 +204,6 @@
         });
     });
 
-    // View User Modal Logic
     window.viewUser = async (uid) => {
         document.getElementById('userModal').style.display = 'block';
         const uDoc = await getDoc(doc(db, "users", uid));
@@ -227,14 +226,14 @@
 
     window.closeModal = () => document.getElementById('userModal').style.display = 'none';
 
-    // Deposit Approval Logic
+    // DEPOSIT APPROVAL (FIXED LOGIC)
     onSnapshot(query(collection(db, "deposits"), where("status", "==", "Pending")), snap => {
         const body = document.getElementById('dep-table-body');
         body.innerHTML = "";
         snap.forEach(d => {
             const row = d.data();
             body.innerHTML += `<tr>
-                <td>${row.uid ? row.uid.substring(0,6) : 'N/A'}..</td>
+                <td>${row.uid ? row.uid.substring(0,8) : 'N/A'}</td>
                 <td>₹${row.amount}</td>
                 <td>${row.utr}</td>
                 <td>
@@ -246,25 +245,29 @@
     });
 
     window.approveDep = async (docId, uid, amt) => {
-        console.log("Approving:", docId, uid, amt);
-        if(!confirm("Approve this deposit?")) return;
+        if(!confirm("Approve ₹" + amt + " for User: " + uid + "?")) return;
         try {
-            const batch = writeBatch(db);
+            // Document reference check
             const userRef = doc(db, "users", uid);
-            const depRef = doc(db, "deposits", docId);
+            const userSnap = await getDoc(userRef);
 
+            if (!userSnap.exists()) {
+                alert("Galti: Ye User ID '" + uid + "' database mein nahi mili! Is request ko REJECT kar dein.");
+                return;
+            }
+
+            const batch = writeBatch(db);
+            // 1. Balance update (users collection)
             batch.update(userRef, { balance: increment(Number(amt)) });
-            batch.update(depRef, { status: "success", timestamp: serverTimestamp() });
+            // 2. Deposit status update (deposits collection)
+            batch.update(doc(db, "deposits", docId), { status: "success", timestamp: serverTimestamp() });
             
             await batch.commit();
-            alert("Payment Approved! Balance Added.");
-        } catch (e) { 
-            console.error(e);
-            alert("Error: " + e.message); 
-        }
+            alert("Success! Balance Added.");
+        } catch (e) { alert("Error: " + e.message); }
     };
 
-    // Withdrawal Logic
+    // WITHDRAWAL LOGIC
     onSnapshot(query(collection(db, "withdrawals"), where("status", "==", "Pending")), snap => {
         const body = document.getElementById('with-table-body');
         body.innerHTML = "";
@@ -275,7 +278,7 @@
                 `<b>Name:</b> ${details.name}<br><b>A/C:</b> ${details.acc}<br><b>IFSC:</b> ${details.ifsc}`;
 
             body.innerHTML += `<tr>
-                <td>${row.uid ? row.uid.substring(0,6) : 'N/A'}</td>
+                <td>${row.uid ? row.uid.substring(0,8) : 'N/A'}</td>
                 <td>₹${row.amount}</td>
                 <td><div class="pay-details-box">${detailsHtml}</div></td>
                 <td>
@@ -290,6 +293,7 @@
         try {
             const batch = writeBatch(db);
             batch.update(doc(db, "withdrawals", id), { status: stat });
+            // Agar reject ho toh paise wapas user balance mein
             if(stat === 'Rejected' && uid) batch.update(doc(db, "users", uid), { balance: increment(Number(amt)) });
             await batch.commit();
             alert("Withdrawal Updated!");
@@ -298,18 +302,13 @@
 
     window.rejectReq = async (coll, id) => {
         if(!confirm("Reject this request?")) return;
-        try {
-            await updateDoc(doc(db, coll, id), { status: "rejected" });
-            alert("Rejected!");
-        } catch(e) { alert("Error rejecting."); }
+        await updateDoc(doc(db, coll, id), { status: "rejected" });
+        alert("Rejected!");
     };
 
     window.deleteUserAccount = async (uid) => {
-        if(!confirm("Are you sure you want to PERMANENTLY delete this user?")) return;
-        try {
-            await deleteDoc(doc(db, "users", uid));
-            alert("User Deleted!");
-        } catch (e) { alert("Error deleting user."); }
+        if(!confirm("Are you sure? This will delete the user profile.")) return;
+        try { await deleteDoc(doc(db, "users", uid)); alert("User Deleted!"); } catch (e) { alert("Error."); }
     };
 
     window.adminLogout = () => { signOut(auth).then(() => window.location.href = "adminlogin.html"); };
