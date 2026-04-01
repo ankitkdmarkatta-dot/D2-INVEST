@@ -62,7 +62,6 @@
             border-left: 4px solid #eee;
             animation: slideUp 0.4s ease-out;
         }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .type-icon {
             width: 45px; height: 45px; border-radius: 12px;
@@ -82,9 +81,9 @@
             font-size: 10px; font-weight: 700; padding: 2px 8px;
             border-radius: 6px; text-transform: uppercase;
         }
-        .status-success, .status-approved, .status-done { background: #dcfce7; color: var(--success); }
+        .status-success, .status-approved { background: #dcfce7; color: var(--success); }
         .status-pending { background: #fef3c7; color: var(--warning); }
-        .status-failed, .status-rejected { background: #fee2e2; color: var(--danger); }
+        .status-rejected { background: #fee2e2; color: var(--danger); }
 
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%;
@@ -132,15 +131,13 @@
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Updated Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyDHjoV-8VeURo26qpor9b_ED41h3uATgG8",
             authDomain: "d2-invest.firebaseapp.com",
             projectId: "d2-invest",
             storageBucket: "d2-invest.firebasestorage.app",
             messagingSenderId: "809739613599",
-            appId: "1:809739613599:web:1415d8dc12c0d82f8af9aa",
-            measurementId: "G-SDKNQSC05G"
+            appId: "1:809739613599:web:1415d8dc12c0d82f8af9aa"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -152,30 +149,38 @@
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                loadHistory(user.uid);
+                loadAllHistory(user.uid);
             } else {
                 window.location.href = "login.html";
             }
         });
 
-        function loadHistory(uid) {
-            const qTrans = query(
-                collection(db, "transactions"), 
-                where("uid", "==", uid)
-            );
+        function loadAllHistory(uid) {
+            const qRecharge = query(collection(db, "recharges"), where("uid", "==", uid));
+            const qWithdraw = query(collection(db, "withdrawals"), where("uid", "==", uid));
 
-            onSnapshot(qTrans, (snapshot) => {
-                allTransactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                
-                // Sorting client-side to avoid needing complex Firestore indexes immediately
-                allTransactions.sort((a, b) => {
-                    const timeA = a.timestamp?.seconds || 0;
-                    const timeB = b.timestamp?.seconds || 0;
-                    return timeB - timeA;
-                });
-                
-                renderList();
+            let recharges = [];
+            let withdrawals = [];
+
+            onSnapshot(qRecharge, (snap) => {
+                recharges = snap.docs.map(doc => ({ ...doc.data(), type: 'Deposit' }));
+                combineAndRender(recharges, withdrawals);
             });
+
+            onSnapshot(qWithdraw, (snap) => {
+                withdrawals = snap.docs.map(doc => ({ ...doc.data(), type: 'Withdrawal' }));
+                combineAndRender(recharges, withdrawals);
+            });
+        }
+
+        function combineAndRender(reg, withD) {
+            allTransactions = [...reg, ...withD];
+            allTransactions.sort((a, b) => {
+                const dateA = a.timestamp?.seconds || 0;
+                const dateB = b.timestamp?.seconds || 0;
+                return dateB - dateA;
+            });
+            renderList();
         }
 
         function renderList() {
@@ -184,39 +189,36 @@
 
             const filtered = currentFilter === 'all' 
                 ? allTransactions 
-                : allTransactions.filter(t => t.type && t.type.toLowerCase() === currentFilter.toLowerCase());
+                : allTransactions.filter(t => t.type === currentFilter);
 
             if (filtered.length === 0) {
                 list.innerHTML = `<div style="text-align:center; margin-top:50px;">
-                    <i class="fa-solid fa-folder-open" style="font-size:40px; color:#ddd;"></i>
-                    <p style="color:#999; font-size:13px; margin-top:10px">No transactions found</p>
+                    <p style="color:#999;">No history found</p>
                 </div>`;
                 return;
             }
 
             filtered.forEach((data) => {
-                const isDeposit = data.type && data.type.toLowerCase() === 'deposit';
-                const date = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleString('en-IN', {
+                const isDeposit = data.type === 'Deposit';
+                const dateStr = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleString('en-IN', {
                     day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
-                }) : 'Recently';
-                
-                const statusStr = data.status || 'Pending';
-                const statusClass = statusStr.toLowerCase();
+                }) : 'Processing...';
 
                 list.innerHTML += `
-                    <div class="transaction-card" style="border-left-color: ${isDeposit ? '#27ae60' : '#e74c3c'}">
+                    <div class="transaction-card" style="border-left: 4px solid ${isDeposit ? '#27ae60' : '#e74c3c'}">
                         <div class="type-icon ${isDeposit ? 'icon-deposit' : 'icon-withdraw'}">
                             <i class="fa-solid ${isDeposit ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
                         </div>
                         <div class="trans-info">
-                            <b>${isDeposit ? 'Deposit Funds' : 'Withdrawal Funds'}</b>
-                            <span>${date}</span>
+                            <b>${isDeposit ? 'Deposit' : 'Withdrawal'}</b>
+                            <span>${dateStr}</span>
+                            ${data.utr ? `<br><small style="font-size:9px">UTR: ${data.utr}</small>` : ''}
                         </div>
                         <div class="trans-amt">
                             <span class="amt-val" style="color: ${isDeposit ? '#27ae60' : '#333'}">
                                 ${isDeposit ? '+' : '-'}₹${data.amount}
                             </span>
-                            <span class="status-badge status-${statusClass}">${statusStr}</span>
+                            <span class="status-badge status-${data.status?.toLowerCase() || 'pending'}">${data.status || 'Pending'}</span>
                         </div>
                     </div>
                 `;
