@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History | D2 INVEST</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #0d2542;
+            --accent: #f1c40f;
+            --bg-light: #f4f7f6;
+            --white: #fff;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --text-muted: #888;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-light); padding-bottom: 90px; }
+
+        header {
+            background: var(--white);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .back-btn { text-decoration: none; color: var(--primary); font-size: 18px; }
+        .logo-round {
+            width: 35px; height: 35px; border-radius: 50%;
+            border: 2px solid var(--accent);
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .logo-round img { width: 100%; height: 100%; object-fit: cover; }
+        .brand-name { font-weight: 800; color: var(--primary); font-size: 15px; }
+
+        .tabs {
+            display: flex; background: white; margin: 15px 20px;
+            border-radius: 12px; padding: 5px; gap: 5px;
+        }
+        .tab-btn {
+            flex: 1; padding: 10px; border: none; border-radius: 10px;
+            background: transparent; color: var(--text-muted);
+            font-weight: 600; font-size: 13px; cursor: pointer;
+            transition: 0.3s;
+        }
+        .tab-btn.active { background: var(--primary); color: white; }
+
+        .history-container { padding: 0 20px; max-width: 500px; margin: 0 auto; min-height: 300px; }
+        
+        .transaction-card {
+            background: white; border-radius: 18px; padding: 15px;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border-left: 4px solid #eee;
+            animation: slideUp 0.4s ease-out;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .type-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+        }
+        .icon-deposit { background: #dcfce7; color: var(--success); }
+        .icon-withdraw { background: #fee2e2; color: var(--danger); }
+
+        .trans-info { flex: 1; margin-left: 15px; }
+        .trans-info b { font-size: 14px; color: var(--primary); display: block; }
+        .trans-info span { font-size: 11px; color: var(--text-muted); }
+
+        .trans-amt { text-align: right; }
+        .amt-val { font-weight: 800; font-size: 15px; display: block; }
+        .status-badge {
+            font-size: 10px; font-weight: 700; padding: 2px 8px;
+            border-radius: 6px; text-transform: uppercase;
+        }
+        .status-success, .status-approved, .status-done { background: #dcfce7; color: var(--success); }
+        .status-pending { background: #fef3c7; color: var(--warning); }
+        .status-failed, .status-rejected { background: #fee2e2; color: var(--danger); }
+
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: white; height: 75px; display: flex;
+            justify-content: space-around; align-items: center;
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.08);
+        }
+        .nav-link { text-decoration: none; color: #94a3b8; text-align: center; flex: 1; font-size: 11px; }
+        .nav-link i { font-size: 22px; display: block; margin-bottom: 4px; }
+        .nav-link.active { color: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <a href="account.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+            <div class="logo-round">
+                <img src="logo.png" alt="D2" onerror="this.parentElement.innerHTML='<b>D2</b>'">
+            </div>
+            <div class="brand-name">TRANSACTIONS</div>
+        </div>
+        <i class="fa-solid fa-filter" style="color: var(--primary); font-size: 14px;"></i>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" id="tab-all" onclick="filterData('all')">All</button>
+        <button class="tab-btn" id="tab-deposit" onclick="filterData('Deposit')">Deposits</button>
+        <button class="tab-btn" id="tab-withdraw" onclick="filterData('Withdrawal')">Withdrawals</button>
+    </div>
+
+    <main class="history-container" id="history-list">
+        <p style="text-align: center; color: #999; margin-top: 50px; font-size: 13px;">Fetching transactions...</p>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="home.html" class="nav-link"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="invest.html" class="nav-link"><i class="fa-solid fa-chart-pie"></i><span>Invest</span></a>
+        <a href="refer.html" class="nav-link"><i class="fa-solid fa-gift"></i><span>Refer</span></a>
+        <a href="account.html" class="nav-link active"><i class="fa-solid fa-user-gear"></i><span>Account</span></a>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Updated Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDHjoV-8VeURo26qpor9b_ED41h3uATgG8",
+            authDomain: "d2-invest.firebaseapp.com",
+            projectId: "d2-invest",
+            storageBucket: "d2-invest.firebasestorage.app",
+            messagingSenderId: "809739613599",
+            appId: "1:809739613599:web:1415d8dc12c0d82f8af9aa",
+            measurementId: "G-SDKNQSC05G"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let allTransactions = [];
+        let currentFilter = 'all';
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loadHistory(user.uid);
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        function loadHistory(uid) {
+            const qTrans = query(
+                collection(db, "transactions"), 
+                where("uid", "==", uid)
+            );
+
+            onSnapshot(qTrans, (snapshot) => {
+                allTransactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // Sorting client-side to avoid needing complex Firestore indexes immediately
+                allTransactions.sort((a, b) => {
+                    const timeA = a.timestamp?.seconds || 0;
+                    const timeB = b.timestamp?.seconds || 0;
+                    return timeB - timeA;
+                });
+                
+                renderList();
+            });
+        }
+
+        function renderList() {
+            const list = document.getElementById('history-list');
+            list.innerHTML = "";
+
+            const filtered = currentFilter === 'all' 
+                ? allTransactions 
+                : allTransactions.filter(t => t.type && t.type.toLowerCase() === currentFilter.toLowerCase());
+
+            if (filtered.length === 0) {
+                list.innerHTML = `<div style="text-align:center; margin-top:50px;">
+                    <i class="fa-solid fa-folder-open" style="font-size:40px; color:#ddd;"></i>
+                    <p style="color:#999; font-size:13px; margin-top:10px">No transactions found</p>
+                </div>`;
+                return;
+            }
+
+            filtered.forEach((data) => {
+                const isDeposit = data.type && data.type.toLowerCase() === 'deposit';
+                const date = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleString('en-IN', {
+                    day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+                }) : 'Recently';
+                
+                const statusStr = data.status || 'Pending';
+                const statusClass = statusStr.toLowerCase();
+
+                list.innerHTML += `
+                    <div class="transaction-card" style="border-left-color: ${isDeposit ? '#27ae60' : '#e74c3c'}">
+                        <div class="type-icon ${isDeposit ? 'icon-deposit' : 'icon-withdraw'}">
+                            <i class="fa-solid ${isDeposit ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+                        </div>
+                        <div class="trans-info">
+                            <b>${isDeposit ? 'Deposit Funds' : 'Withdrawal Funds'}</b>
+                            <span>${date}</span>
+                        </div>
+                        <div class="trans-amt">
+                            <span class="amt-val" style="color: ${isDeposit ? '#27ae60' : '#333'}">
+                                ${isDeposit ? '+' : '-'}₹${data.amount}
+                            </span>
+                            <span class="status-badge status-${statusClass}">${statusStr}</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.filterData = (type) => {
+            currentFilter = type;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            if(type === 'all') document.getElementById('tab-all').classList.add('active');
+            else if(type === 'Deposit') document.getElementById('tab-deposit').classList.add('active');
+            else if(type === 'Withdrawal') document.getElementById('tab-withdraw').classList.add('active');
+            renderList();
+        };
+    </script>
+</body>
+</html>
