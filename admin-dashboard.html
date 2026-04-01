@@ -143,7 +143,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, doc, updateDoc, increment, query, where, writeBatch, serverTimestamp, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, doc, updateDoc, increment, query, where, writeBatch, serverTimestamp, getDocs, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDHjoV-8VeURo26qpor9b_ED41h3uATgG8",
@@ -158,10 +158,12 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // Auth Check
     onAuthStateChanged(auth, (user) => {
         if (!user || user.email !== "adminkd@gmail.com") window.location.href = "adminlogin.html";
     });
 
+    // Tab Logic
     window.switchTab = (tabId, el) => {
         document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
@@ -169,7 +171,7 @@
         el.classList.add('active');
     };
 
-    // Stats - Modified to look for 'success' status
+    // Dashboard Stats
     onSnapshot(query(collection(db, "deposits"), where("status", "==", "success")), (snap) => {
         let total = 0, today = 0;
         const startOfDay = new Date().setHours(0,0,0,0);
@@ -183,7 +185,7 @@
         document.getElementById('today-dep-sum').innerText = "₹" + today;
     });
 
-    // Users Logic
+    // Users List
     onSnapshot(collection(db, "users"), snap => {
         document.getElementById('total-users').innerText = snap.size;
         const body = document.getElementById('users-table-body');
@@ -202,6 +204,7 @@
         });
     });
 
+    // View User Modal Logic
     window.viewUser = async (uid) => {
         document.getElementById('userModal').style.display = 'block';
         const uDoc = await getDoc(doc(db, "users", uid));
@@ -224,7 +227,7 @@
 
     window.closeModal = () => document.getElementById('userModal').style.display = 'none';
 
-    // Deposit Approval - UPDATED LOGIC
+    // Deposit Approval Logic
     onSnapshot(query(collection(db, "deposits"), where("status", "==", "Pending")), snap => {
         const body = document.getElementById('dep-table-body');
         body.innerHTML = "";
@@ -243,17 +246,22 @@
     });
 
     window.approveDep = async (docId, uid, amt) => {
+        console.log("Approving:", docId, uid, amt);
         if(!confirm("Approve this deposit?")) return;
         try {
             const batch = writeBatch(db);
-            // 1. Update user balance in 'users' collection
-            batch.update(doc(db, "users", uid), { balance: increment(Number(amt)) });
-            // 2. Mark deposit as 'success'
-            batch.update(doc(db, "deposits", docId), { status: "success", timestamp: serverTimestamp() });
+            const userRef = doc(db, "users", uid);
+            const depRef = doc(db, "deposits", docId);
+
+            batch.update(userRef, { balance: increment(Number(amt)) });
+            batch.update(depRef, { status: "success", timestamp: serverTimestamp() });
             
             await batch.commit();
             alert("Payment Approved! Balance Added.");
-        } catch (e) { alert("Error: " + e.message); }
+        } catch (e) { 
+            console.error(e);
+            alert("Error: " + e.message); 
+        }
     };
 
     // Withdrawal Logic
@@ -289,22 +297,22 @@
     };
 
     window.rejectReq = async (coll, id) => {
-        if(!confirm("Reject this?")) return;
-        await updateDoc(doc(db, coll, id), { status: "rejected" });
-        alert("Rejected!");
+        if(!confirm("Reject this request?")) return;
+        try {
+            await updateDoc(doc(db, coll, id), { status: "rejected" });
+            alert("Rejected!");
+        } catch(e) { alert("Error rejecting."); }
     };
 
     window.deleteUserAccount = async (uid) => {
-        if(!confirm("Permanent delete user?")) return;
+        if(!confirm("Are you sure you want to PERMANENTLY delete this user?")) return;
         try {
-            const batch = writeBatch(db);
-            batch.delete(doc(db, "users", uid));
-            await batch.commit();
+            await deleteDoc(doc(db, "users", uid));
             alert("User Deleted!");
-        } catch (e) { alert("Error."); }
+        } catch (e) { alert("Error deleting user."); }
     };
 
-    window.adminLogout = () => { signOut(auth); window.location.href = "adminlogin.html"; };
+    window.adminLogout = () => { signOut(auth).then(() => window.location.href = "adminlogin.html"); };
 </script>
 </body>
 </html>
