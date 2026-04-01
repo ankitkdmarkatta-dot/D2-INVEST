@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D2 Admin | Master Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #0d2542; --accent: #f1c40f; --bg: #f4f7f6; --white: #fff; --danger: #e74c3c; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg); color: var(--primary); }
+
+        .sidebar { 
+            width: 260px; background: var(--primary); height: 100vh; position: fixed; 
+            color: white; padding: 30px 20px; display: flex; flex-direction: column; 
+            transition: 0.3s; z-index: 1000; 
+        }
+        
+        .side-logo { 
+            width: 75px; height: 75px; background: var(--white); border-radius: 20px; 
+            display: flex; align-items: center; justify-content: center; 
+            margin: 0 auto 40px; border: 3px solid var(--accent); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2); overflow: hidden;
+        }
+        .side-logo img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .nav-link { 
+            padding: 14px 18px; border-radius: 12px; color: rgba(255,255,255,0.7); 
+            cursor: pointer; display: flex; align-items: center; gap: 12px; 
+            margin-bottom: 8px; font-weight: 600; transition: 0.3s; 
+            text-decoration: none;
+        }
+        .nav-link.active { background: var(--accent); color: var(--primary); }
+
+        .main-view { margin-left: 260px; width: calc(100% - 260px); padding: 30px; transition: 0.3s; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-card { 
+            background: white; padding: 25px; border-radius: 20px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03); border-bottom: 4px solid var(--accent);
+        }
+        .stat-card span { font-size: 11px; color: #777; font-weight: 700; text-transform: uppercase; }
+        .stat-card h2 { font-size: 28px; font-weight: 800; margin-top: 5px; }
+
+        .table-card { 
+            background: white; border-radius: 20px; padding: 15px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03); overflow-x: auto; 
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { text-align: left; padding: 12px; color: #888; font-size: 11px; text-transform: uppercase; border-bottom: 2px solid #f4f7f6; }
+        td { padding: 14px 12px; font-size: 13px; font-weight: 600; border-bottom: 1px solid #f4f7f6; }
+        
+        .btn-act { padding: 7px 12px; border-radius: 8px; border: none; font-weight: 700; font-size: 11px; cursor: pointer; }
+        .btn-approve { background: #27ae60; color: white; }
+        .btn-reject { background: #e74c3c; color: white; margin-left: 4px; }
+        .btn-view { background: #3498db; color: white; margin-right: 4px;}
+        .btn-delete { background: #000; color: #ff4757; border: 1px solid #ff4757; }
+
+        .tab-view { display: none; }
+        .tab-view.active { display: block; }
+
+        .pay-details-box { background: #fdf9e7; padding: 10px; border-radius: 8px; font-size: 11px; line-height: 1.5; color: #333; border-left: 3px solid var(--accent); }
+
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content { background: white; margin: 10% auto; padding: 20px; border-radius: 15px; width: 90%; max-width: 500px; position: relative; }
+        .close-modal { position: absolute; right: 20px; top: 15px; font-size: 24px; cursor: pointer; }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-view { margin-left: 0; width: 100%; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="side-logo">
+        <img src="logo.png" alt="D2 Logo" onerror="this.outerHTML='<span style=\'font-weight:900;color:#0d2542\'>D2</span>'">
+    </div>
+    <div class="nav-link active" onclick="switchTab('dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</div>
+    <div class="nav-link" onclick="switchTab('users-list', this)"><i class="fa-solid fa-users"></i> All Users</div>
+    <div class="nav-link" onclick="switchTab('deposits', this)"><i class="fa-solid fa-plus-circle"></i> Deposits</div>
+    <div class="nav-link" onclick="switchTab('withdrawals', this)"><i class="fa-solid fa-minus-circle"></i> Withdrawals</div>
+    <div class="nav-link" style="margin-top: auto; color: #ff7675;" onclick="adminLogout()"><i class="fa-solid fa-power-off"></i> Logout</div>
+</div>
+
+<div class="main-view">
+    <div id="dashboard" class="tab-view active">
+        <h1 style="margin-bottom: 20px;">D2 Master Overview</h1>
+        <div class="stats-grid">
+            <div class="stat-card"><span>Total Members</span><h2 id="total-users">0</h2></div>
+            <div class="stat-card"><span>Today's Deposit</span><h2 id="today-dep-sum">₹0</h2></div>
+            <div class="stat-card"><span>Total Deposits</span><h2 id="total-dep-sum">₹0</h2></div>
+        </div>
+    </div>
+
+    <div id="users-list" class="tab-view">
+        <h1 style="margin-bottom: 20px;">All Registered Users</h1>
+        <div class="table-card">
+            <table>
+                <thead><tr><th>User ID</th><th>Email/Phone</th><th>Balance</th><th>Action</th></tr></thead>
+                <tbody id="users-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="deposits" class="tab-view">
+        <h1 style="margin-bottom: 20px;">Deposit Approval</h1>
+        <div class="table-card">
+            <table>
+                <thead><tr><th>User ID</th><th>Amount</th><th>UTR/Ref</th><th>Action</th></tr></thead>
+                <tbody id="dep-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="withdrawals" class="tab-view">
+        <h1 style="margin-bottom: 20px;">Withdrawal Requests</h1>
+        <div class="table-card">
+            <table>
+                <thead><tr><th>User ID</th><th>Amount</th><th>Account Details</th><th>Action</th></tr></thead>
+                <tbody id="with-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="userModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h2 id="m-user-id" style="margin-bottom: 15px; font-size: 18px;">User Details</h2>
+        <hr><br>
+        <div id="user-info-box">
+            <p><strong>Contact:</strong> <span id="m-email"></span></p>
+            <p><strong>Balance:</strong> ₹<span id="m-balance"></span></p>
+            <p><strong>Ref Code:</strong> <span id="m-refcode"></span></p>
+            <p><strong>Investments:</strong> <div id="m-invest" style="margin-top:10px; font-size:12px;">Fetching...</div></p>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, doc, updateDoc, increment, query, where, writeBatch, serverTimestamp, getDocs, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // UPDATED FIREBASE CONFIG FOR D2-INVEST
+    const firebaseConfig = {
+        apiKey: "AIzaSyDHjoV-8VeURo26qpor9b_ED41h3uATgG8",
+        authDomain: "d2-invest.firebaseapp.com",
+        projectId: "d2-invest",
+        storageBucket: "d2-invest.firebasestorage.app",
+        messagingSenderId: "809739613599",
+        appId: "1:809739613599:web:1415d8dc12c0d82f8af9aa",
+        measurementId: "G-SDKNQSC05G"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // SECURITY CHECK: Only Admin allowed
+    onAuthStateChanged(auth, (user) => {
+        if (!user || user.email !== "adminkd@gmail.com") {
+            window.location.href = "adminlogin.html";
+        }
+    });
+
+    window.switchTab = (tabId, el) => {
+        document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        el.classList.add('active');
+    };
+
+    // Dashboard Stats
+    onSnapshot(query(collection(db, "deposits"), where("status", "==", "Approved")), (snap) => {
+        let total = 0, today = 0;
+        const startOfDay = new Date().setHours(0,0,0,0);
+        snap.forEach(d => {
+            const data = d.data();
+            const amt = parseFloat(data.amount) || 0;
+            total += amt;
+            if (data.timestamp && data.timestamp.seconds * 1000 >= startOfDay) today += amt;
+        });
+        document.getElementById('total-dep-sum').innerText = "₹" + total;
+        document.getElementById('today-dep-sum').innerText = "₹" + today;
+    });
+
+    onSnapshot(collection(db, "users"), snap => {
+        document.getElementById('total-users').innerText = snap.size;
+        const body = document.getElementById('users-table-body');
+        body.innerHTML = "";
+        snap.forEach(u => {
+            const data = u.data();
+            body.innerHTML += `<tr>
+                <td>${u.id.substring(0,8)}...</td>
+                <td>${data.email || data.phone || 'N/A'}</td>
+                <td>₹${data.balance || 0}</td>
+                <td>
+                    <button class="btn-act btn-view" onclick="viewUser('${u.id}')">VIEW</button>
+                    <button class="btn-act btn-delete" onclick="deleteUserAccount('${u.id}')">DELETE</button>
+                </td>
+            </tr>`;
+        });
+    });
+
+    window.deleteUserAccount = async (uid) => {
+        if(!confirm("Warning! User ka sara data permanent delete ho jayega. Continue?")) return;
+        try {
+            const batch = writeBatch(db);
+            batch.delete(doc(db, "users", uid));
+            const collectionsToDelete = ["investments", "transactions", "deposits", "withdrawals"];
+            for (const colName of collectionsToDelete) {
+                const q = query(collection(db, colName), where("uid", "==", uid));
+                const qSnap = await getDocs(q);
+                qSnap.forEach(d => batch.delete(d.ref));
+            }
+            await batch.commit();
+            alert("User Deleted Successfully!");
+        } catch (e) { alert("Error deleting user."); }
+    };
+
+    window.viewUser = async (uid) => {
+        document.getElementById('userModal').style.display = 'block';
+        const uDoc = await getDoc(doc(db, "users", uid));
+        if(uDoc.exists()) {
+            const d = uDoc.data();
+            document.getElementById('m-email').innerText = d.email || d.phone;
+            document.getElementById('m-balance').innerText = d.balance || 0;
+            document.getElementById('m-refcode').innerText = d.referralCode || 'N/A';
+        }
+        const invs = await getDocs(query(collection(db, "investments"), where("uid", "==", uid)));
+        let text = "";
+        invs.forEach(i => {
+            const invData = i.data();
+            text += `<div style="background:#f4f7f6; padding:5px; margin-bottom:5px; border-radius:5px;">
+                        <b>Plan:</b> ${invData.planName} | <b>Amt:</b> ₹${invData.amount}
+                      </div>`;
+        });
+        document.getElementById('m-invest').innerHTML = text || "No active investments";
+    };
+
+    window.closeModal = () => document.getElementById('userModal').style.display = 'none';
+
+    // Deposits Approval logic
+    onSnapshot(query(collection(db, "deposits"), where("status", "==", "Pending")), snap => {
+        const body = document.getElementById('dep-table-body');
+        body.innerHTML = "";
+        snap.forEach(d => {
+            const row = d.data();
+            body.innerHTML += `<tr>
+                <td>${row.uid ? row.uid.substring(0,6) : 'N/A'}..</td>
+                <td>₹${row.amount}</td>
+                <td>${row.utr}</td>
+                <td>
+                    <button class="btn-act btn-approve" onclick="approveDep('${d.id}', '${row.uid}', ${row.amount})">ADD</button>
+                    <button class="btn-act btn-reject" onclick="rejectReq('deposits', '${d.id}')">REJECT</button>
+                </td>
+            </tr>`;
+        });
+    });
+
+    window.approveDep = async (docId, uid, amt) => {
+        try {
+            const batch = writeBatch(db);
+            batch.update(doc(db, "users", uid), { balance: increment(amt) });
+            batch.update(doc(db, "deposits", docId), { status: "Approved", timestamp: serverTimestamp() });
+            
+            const transRef = doc(db, "transactions", docId); 
+            batch.set(transRef, {
+                uid: uid,
+                amount: amt,
+                type: "Deposit",
+                status: "Success",
+                timestamp: serverTimestamp(),
+                refId: docId
+            });
+            
+            await batch.commit();
+            alert("Payment Approved! Balance Added.");
+        } catch (e) { alert("Error approving deposit."); }
+    };
+
+    // Withdrawals logic
+    onSnapshot(query(collection(db, "withdrawals"), where("status", "==", "Pending")), snap => {
+        const body = document.getElementById('with-table-body');
+        body.innerHTML = "";
+        snap.forEach(d => {
+            const row = d.data();
+            const details = row.details || {};
+            let detailsHtml = row.method === "upi" ? `<b>UPI:</b> ${details.upi}` : 
+                `<b>Name:</b> ${details.name}<br><b>A/C:</b> ${details.acc}<br><b>IFSC:</b> ${details.ifsc}`;
+
+            body.innerHTML += `<tr>
+                <td>${row.uid ? row.uid.substring(0,6) : 'N/A'}</td>
+                <td>₹${row.amount}</td>
+                <td><div class="pay-details-box">${detailsHtml}</div></td>
+                <td>
+                    <button class="btn-act btn-approve" onclick="actionWith('${d.id}', 'Success', '${row.uid}', ${row.amount})">DONE</button>
+                    <button class="btn-act btn-reject" onclick="actionWith('${d.id}', 'Rejected', '${row.uid}', ${row.amount})">REJECT</button>
+                </td>
+            </tr>`;
+        });
+    });
+
+    window.actionWith = async (id, stat, uid, amt) => {
+        try {
+            const batch = writeBatch(db);
+            batch.update(doc(db, "withdrawals", id), { status: stat });
+            if(stat === 'Rejected' && uid) batch.update(doc(db, "users", uid), { balance: increment(amt) });
+            
+            const transRef = doc(db, "transactions", id);
+            batch.set(transRef, {
+                uid: uid,
+                amount: amt,
+                type: "Withdrawal",
+                status: stat,
+                timestamp: serverTimestamp(),
+                refId: id
+            });
+            
+            await batch.commit();
+            alert("Withdrawal Status Updated!");
+        } catch (e) { alert("Error processing withdrawal."); }
+    };
+
+    window.rejectReq = async (coll, id) => {
+        await updateDoc(doc(db, coll, id), { status: "Rejected" });
+        alert("Request Rejected!");
+    };
+
+    window.adminLogout = () => { signOut(auth); window.location.href = "adminlogin.html"; };
+</script>
+</body>
+</html>
