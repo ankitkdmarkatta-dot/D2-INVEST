@@ -11,67 +11,71 @@
         :root {
             --brand-primary: #0047FF;
             --brand-dark: #0a0e14;
-            --accent: #f59e0b;
             --success: #10b981;
             --danger: #ef4444;
-            --bg-light: #f8fafc;
+            --bg-light: #f4f7fa;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg-light); padding-bottom: 100px; color: #1e293b; }
 
         header {
-            background: #fff; padding: 12px 20px; display: flex; align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000;
+            background: #fff; padding: 15px 20px; display: flex; align-items: center;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 1000;
         }
-        .logo-img { width: 40px; height: 40px; border-radius: 8px; margin-right: 12px; object-fit: cover; }
-        .brand-name { font-weight: 800; font-size: 18px; color: var(--brand-dark); }
+        .logo-img { width: 38px; height: 38px; border-radius: 8px; margin-right: 12px; }
+        .brand-name { font-weight: 800; font-size: 20px; color: var(--brand-dark); }
 
         .tab-container { display: flex; gap: 10px; padding: 20px 15px; max-width: 500px; margin: 0 auto; }
         .tab-btn {
-            flex: 1; padding: 12px; border: none; border-radius: 12px;
+            flex: 1; padding: 14px; border: none; border-radius: 12px;
             font-weight: 700; cursor: pointer; background: #e2e8f0; color: #64748b;
         }
-        .tab-btn.active { background: var(--brand-primary); color: white; }
+        .tab-btn.active { background: var(--brand-primary); color: white; box-shadow: 0 4px 15px rgba(0, 71, 255, 0.2); }
 
         .plans-grid { display: grid; grid-template-columns: 1fr; gap: 20px; padding: 0 15px; max-width: 500px; margin: 0 auto; }
         
         .plan-card {
-            background: white; border-radius: 24px; overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.03);
+            background: white; border-radius: 28px; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.02);
         }
-        .plan-img-box { position: relative; height: 170px; }
+        .plan-img-box { position: relative; height: 180px; }
         .plan-img-box img { width: 100%; height: 100%; object-fit: cover; }
-        .badge { position: absolute; top: 15px; right: 15px; background: var(--danger); color: white; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; }
+        .price-tag { 
+            position: absolute; bottom: 15px; left: 15px; background: var(--brand-primary); 
+            color: white; padding: 6px 15px; border-radius: 10px; font-weight: 700;
+        }
 
         .plan-content { padding: 20px; }
-        .plan-title { font-size: 19px; font-weight: 800; color: #0f172a; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-        .plan-desc { font-size: 12px; color: #64748b; margin-bottom: 15px; line-height: 1.5; }
+        .plan-title { font-size: 19px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
+        .plan-desc { font-size: 12px; color: #64748b; line-height: 1.5; margin-bottom: 15px; }
         
-        .stats-grid { 
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; 
-            background: #f1f5f9; padding: 15px; border-radius: 16px; margin-bottom: 15px;
+        .mini-stats { 
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f8fafc; 
+            padding: 15px; border-radius: 20px; margin-bottom: 15px;
         }
-        .stat-item span { display: block; font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
-        .stat-item b { font-size: 14px; color: #1e293b; }
+        .ms-item span { display: block; font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
+        .ms-item b { font-size: 14px; color: #1e293b; }
 
         .buy-btn {
-            width: 100%; background: var(--brand-primary); border: none;
+            width: 100%; background: var(--brand-dark); border: none;
             padding: 16px; border-radius: 15px; font-weight: 700;
-            color: white; cursor: pointer; font-size: 15px; transition: 0.2s;
+            color: white; cursor: pointer; font-size: 15px;
         }
-        .buy-btn:active { transform: scale(0.96); }
 
-        /* Modal */
+        /* Modal Details */
         .modal {
             display: none; position: fixed; z-index: 2000; left: 0; top: 0;
-            width: 100%; height: 100%; background: rgba(0,0,0,0.8);
+            width: 100%; height: 100%; background: rgba(0,0,0,0.85);
             align-items: center; justify-content: center; padding: 20px;
         }
         .modal-content {
-            background: white; width: 100%; max-width: 360px;
-            border-radius: 28px; padding: 25px; text-align: center;
+            background: white; width: 100%; max-width: 380px;
+            border-radius: 30px; padding: 25px; text-align: center;
         }
+        .detail-list { text-align: left; margin: 20px 0; background: #f1f5f9; padding: 18px; border-radius: 20px; }
+        .dl-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #cbd5e1; }
+        .dl-row:last-child { border: none; }
 
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%;
@@ -92,8 +96,8 @@
     </header>
 
     <div class="tab-container">
-        <button class="tab-btn active" id="buy-btn-tab" onclick="showTab('buy')">Invest Now</button>
-        <button class="tab-btn" id="active-btn-tab" onclick="showTab('active')">Active Plans</button>
+        <button class="tab-btn active" id="buy-btn-tab" onclick="showTab('buy')">Investment Plans</button>
+        <button class="tab-btn" id="active-btn-tab" onclick="showTab('active')">My Portfolio</button>
     </div>
 
     <div id="buy-plans-section" class="plans-grid">
@@ -102,30 +106,31 @@
     <div id="active-plans-section" style="display:none;">
         <div id="active-list" class="plans-grid"></div>
         <div id="no-active" style="text-align:center; padding:100px 20px; color:#94a3b8;">
-            <i class="fa-solid fa-folder-open" style="font-size:50px; margin-bottom:15px;"></i>
-            <p>Koi active investment nahi mila.</p>
+            <i class="fa-solid fa-folder-open" style="font-size:50px; margin-bottom:15px; opacity:0.3;"></i>
+            <p>Aapke paas koi active plan nahi hai.</p>
         </div>
     </div>
 
     <div class="modal" id="order-modal">
         <div class="modal-content">
-            <img src="d2 logo.png" style="width:60px; margin-bottom:15px; border-radius:12px;">
-            <h3 id="m-name">Confirm Order</h3>
-            <div style="margin: 20px 0; text-align: left; background: #f8fafc; padding: 15px; border-radius: 15px; font-size: 14px;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Plan Cost:</span><b id="m-price">₹0</b></div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Daily Profit:</span><b id="m-daily" style="color:var(--success);">₹0</b></div>
-                <div style="display:flex; justify-content:space-between;"><span>Total Return:</span><b id="m-total">₹0</b></div>
+            <h3 id="m-name" style="font-size:22px; font-weight:800;">Plan Breakdown</h3>
+            <div class="detail-list">
+                <div class="dl-row"><span>Invest Amount:</span><b id="m-price">₹0</b></div>
+                <div class="dl-row"><span>Daily Profit:</span><b id="m-daily" style="color:var(--success);">₹0</b></div>
+                <div class="dl-row"><span>Hourly Income:</span><b id="m-hourly">₹0</b></div>
+                <div class="dl-row"><span>Total Returns (2.3x):</span><b id="m-total">₹0</b></div>
+                <div class="dl-row"><span>Validity:</span><b id="m-days">0 Days</b></div>
             </div>
-            <button class="buy-btn" id="confirm-buy-btn">ACTIVATE PLAN</button>
-            <p onclick="closeModal()" style="margin-top:15px; color:var(--danger); font-weight:700; cursor:pointer;">Cancel</p>
+            <button class="buy-btn" id="confirm-buy-btn" style="background:var(--brand-primary);">ACTIVATE NOW</button>
+            <p onclick="closeModal()" style="margin-top:15px; color:var(--danger); font-weight:700; cursor:pointer;">Close</p>
         </div>
     </div>
 
     <nav class="bottom-nav">
         <a href="home.html" class="nav-link"><i class="fa-solid fa-house"></i><span>Home</span></a>
         <a href="invest.html" class="nav-link active"><i class="fa-solid fa-chart-line"></i><span>Invest</span></a>
-        <a href="refer.html" class="nav-link"><i class="fa-solid fa-user-group"></i><span>Refer</span></a>
-        <a href="account.html" class="nav-link"><i class="fa-solid fa-wallet"></i><span>Account</span></a>
+        <a href="refer.html" class="nav-link"><i class="fa-solid fa-users"></i><span>Refer</span></a>
+        <a href="account.html" class="nav-link"><i class="fa-solid fa-user"></i><span>Account</span></a>
     </nav>
 
     <script type="module">
@@ -149,49 +154,55 @@
         let currentUser = null;
         let pData = {};
 
+        // Combined 24 Plans (20 Original + 4 New Special Plans)
         const planList = [
-            { name: "Zomato Ltd", price: 599, total: 1600, days: 14, img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500", desc: "Zomato delivery expansion project. Earn daily profit for 14 days." },
-            { name: "Cloud Server", price: 999, total: 2100, days: 12, img: "https://images.unsplash.com/photo-1558494949-ef010cbdcc51?w=500", desc: "Technical server farm investment with high daily yields." },
-            { name: "Swiggy Flash", price: 350, total: 800, days: 8, img: "https://images.unsplash.com/photo-1526367790999-0150786486a9?w=500", desc: "Fast return plan for food delivery logistics." },
-            { name: "Netflix Stream", price: 699, total: 1300, days: 10, img: "https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=500", desc: "Global streaming content rights investment." },
-            { name: "Tesla AI Unit", price: 2500, total: 6000, days: 15, img: "https://images.unsplash.com/photo-1539139560574-df99d214f854?w=500", desc: "Artificial intelligence training systems for EV cars." },
-            { name: "Reliance Jio 5G", price: 1200, total: 3000, days: 14, img: "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=500", desc: "Broadband and 5G network expansion dividends." },
-            { name: "Amazon Warehouse", price: 1800, total: 4500, days: 18, img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500", desc: "E-commerce storage and logistics profit sharing." },
-            { name: "Bitcoin Node", price: 3000, total: 8000, days: 20, img: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=500", desc: "Crypto mining node and blockchain verification." },
-            { name: "Solar Grid", price: 450, total: 1000, days: 10, img: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=500", desc: "Renewable energy panels installation returns." },
-            { name: "Starlink Space", price: 5000, total: 13500, days: 25, img: "https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?w=500", desc: "Low orbit satellite internet infrastructure." },
-            { name: "Apple M3 Dev", price: 3500, total: 9000, days: 20, img: "https://images.unsplash.com/photo-1611186871348-b1ec696e52c9?w=500", desc: "Chip manufacturing and hardware R&D project." },
-            { name: "Uber Fleet", price: 800, total: 1800, days: 12, img: "https://images.unsplash.com/photo-1559297434-2d8a134e0ff2?w=500", desc: "Taxi fleet electrification and driver support." },
-            { name: "Meta VR Core", price: 2200, total: 5500, days: 16, img: "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?w=500", desc: "Virtual reality headset hardware development." },
-            { name: "Adidas Green", price: 650, total: 1400, days: 10, img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500", desc: "Sustainable material research for sportswear." },
-            { name: "SpaceX Rocket", price: 10000, total: 28000, days: 30, img: "https://images.unsplash.com/photo-1517976487492-5750f3195933?w=500", desc: "Next-gen rocket propulsion technology investment." },
-            { name: "Hydrogen Fuel", price: 1500, total: 3800, days: 15, img: "https://images.unsplash.com/photo-1634467524884-897d0af5e104?w=500", desc: "Clean hydrogen energy production plant." },
-            { name: "AI Chatbot Pro", price: 250, total: 550, days: 7, img: "https://images.unsplash.com/photo-1675557009875-436f595b1840?w=500", desc: "Advanced LLM training and API development." },
-            { name: "Nvidia GPU Hub", price: 4000, total: 11000, days: 22, img: "https://images.unsplash.com/photo-1591488320449-011701bb6704?w=500", desc: "GPU cloud processing for AI enterprises." },
-            { name: "Adani Green", price: 2800, total: 7200, days: 18, img: "https://images.unsplash.com/photo-1466611653911-954ffea1127b?w=500", desc: "Wind turbine farms and green energy grid." },
-            { name: "Microsoft Azure", price: 1600, total: 4000, days: 16, img: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500", desc: "Enterprise cloud software development cycle." }
+            { name: "Swiggy Starter", price: 350, total: 800, days: 8, img: "https://images.unsplash.com/photo-1526367790999-0150786486a9?w=600", desc: "Short term liquid investment for quick logistics." },
+            { name: "Zomato Growth", price: 599, total: 1600, days: 14, img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600", desc: "Hyperlocal delivery network expansion project." },
+            { name: "Netflix Stream", price: 699, total: 1450, days: 10, img: "https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=600", desc: "Premium content and digital rights management." },
+            { name: "Cloud Server", price: 999, total: 2200, days: 12, img: "https://images.unsplash.com/photo-1558494949-ef010cbdcc51?w=600", desc: "Data hosting and high-speed infrastructure." },
+            
+            // New 2.3x Profit Plans
+            { name: "Tata Power 5G", price: 1200, total: 1200*2.3, days: 15, img: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600", desc: "2.3x High yield broadband infrastructure fund." },
+            { name: "Airtel Xstream", price: 1250, total: 1250*2.3, days: 15, img: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=600", desc: "Digital connectivity and fiber optic investment." },
+            { name: "Jio Fiber Max", price: 1300, total: 1300*2.3, days: 15, img: "https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=600", desc: "Nationwide satellite internet rollout project." },
+            { name: "Adani Green X", price: 1400, total: 1400*2.3, days: 15, img: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600", desc: "Exclusive 2.3x profit solar energy grid fund." },
+            
+            { name: "Reliance Jio", price: 1500, total: 3800, days: 15, img: "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=600", desc: "5G technology and mobile network expansion." },
+            { name: "Tesla Power", price: 2200, total: 5800, days: 18, img: "https://images.unsplash.com/photo-1539139560574-df99d214f854?w=600", desc: "Next-gen EV battery tech research project." },
+            { name: "Amazon Ware", price: 2800, total: 7500, days: 20, img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600", desc: "AI warehouse and automated shipping cycles." },
+            { name: "Apple M3 Chip", price: 3500, total: 10000, days: 22, img: "https://images.unsplash.com/photo-1611186871348-b1ec696e52c9?w=600", desc: "Advanced processor manufacturing dividends." },
+            { name: "Nvidia GPU Hub", price: 4200, total: 12500, days: 24, img: "https://images.unsplash.com/photo-1591488320449-011701bb6704?w=600", desc: "Compute nodes for enterprise level AI training." },
+            { name: "Bitcoin Vault", price: 5000, total: 15500, days: 25, img: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=600", desc: "Digital ledger and hardware mining node project." },
+            { name: "Starlink Space", price: 5800, total: 18000, days: 28, img: "https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?w=600", desc: "Satellite internet global network infrastructure." },
+            { name: "SpaceX Mars", price: 6500, total: 21000, days: 30, img: "https://images.unsplash.com/photo-1517976487492-5750f3195933?w=600", desc: "Rocket propulsion and heavy lift logistics." },
+            { name: "Meta VR Core", price: 7200, total: 24000, days: 32, img: "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?w=600", desc: "Virtual reality and metaverse hardware development." },
+            { name: "Gold Standard", price: 8000, total: 28000, days: 35, img: "https://images.unsplash.com/photo-1589118949245-7d38baf380d6?w=600", desc: "Safe haven asset backing and gold mining." },
+            { name: "Hydrogen Hub", price: 8800, total: 32000, days: 38, img: "https://images.unsplash.com/photo-1634467524884-897d0af5e104?w=600", desc: "Clean hydrogen energy production plant." },
+            { name: "Adani Wind", price: 9500, total: 36000, days: 40, img: "https://images.unsplash.com/photo-1466611653911-954ffea1127b?w=600", desc: "Renewable energy wind turbine farm installation." },
+            { name: "Microsoft AI", price: 10500, total: 42000, days: 45, img: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600", desc: "Enterprise cloud AI software cycle fund." },
+            { name: "Google Quantum", price: 12000, total: 50000, days: 50, img: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600", desc: "Advanced quantum research lab development." },
+            { name: "Diamond Mine", price: 15000, total: 65000, days: 60, img: "https://images.unsplash.com/photo-1588615419957-550e5041f021?w=600", desc: "Natural resource extraction and trading." },
+            { name: "D2 Legacy", price: 20000, total: 100000, days: 75, img: "https://images.unsplash.com/photo-1454165833767-1246991901a1?w=600", desc: "The ultimate long-term wealth creation fund." }
         ];
 
         function renderPlans() {
             const container = document.getElementById('buy-plans-section');
-            planList.forEach((p, index) => {
+            planList.sort((a,b) => a.price - b.price).forEach((p) => {
                 const daily = (p.total / p.days).toFixed(2);
                 container.innerHTML += `
                     <div class="plan-card">
                         <div class="plan-img-box">
-                            ${index < 3 ? '<div class="badge">Trending</div>' : ''}
+                            <span class="price-tag">₹${p.price}</span>
                             <img src="${p.img}">
                         </div>
                         <div class="plan-content">
-                            <div class="plan-title"><img src="d2 logo.png" style="width:22px; border-radius:4px;"> ${p.name}</div>
+                            <div class="plan-title">${p.name}</div>
                             <p class="plan-desc">${p.desc}</p>
-                            <div class="stats-grid">
-                                <div class="stat-item"><span>Price</span><b>₹${p.price}</b></div>
-                                <div class="stat-item"><span>Daily Profit</span><b style="color:var(--success);">₹${daily}</b></div>
-                                <div class="stat-item"><span>Validity</span><b>${p.days} Days</b></div>
-                                <div class="stat-item"><span>Total Return</span><b>₹${p.total}</b></div>
+                            <div class="mini-stats">
+                                <div class="ms-item"><span>Daily Profit</span><b style="color:var(--success);">₹${daily}</b></div>
+                                <div class="ms-item"><span>Validity</span><b>${p.days} Days</b></div>
                             </div>
-                            <button class="buy-btn" onclick="openModal('${p.name}', ${p.price}, ${daily}, ${p.days}, ${p.total})">INVEST NOW</button>
+                            <button class="buy-btn" onclick="openModal('${p.name}', ${p.price}, ${daily}, ${p.days}, ${p.total})">VIEW DETAILS</button>
                         </div>
                     </div>`;
             });
@@ -203,7 +214,9 @@
             document.getElementById('m-name').innerText = name;
             document.getElementById('m-price').innerText = "₹" + price;
             document.getElementById('m-daily').innerText = "₹" + daily;
-            document.getElementById('m-total').innerText = "₹" + total;
+            document.getElementById('m-hourly').innerText = "₹" + (daily/24).toFixed(2);
+            document.getElementById('m-total').innerText = "₹" + Math.round(total);
+            document.getElementById('m-days').innerText = days + " Days";
             document.getElementById('order-modal').style.display = 'flex';
         }
 
@@ -211,7 +224,7 @@
 
         document.getElementById('confirm-buy-btn').onclick = async () => {
             const btn = document.getElementById('confirm-buy-btn');
-            btn.disabled = true; btn.innerText = "Processing...";
+            btn.disabled = true; btn.innerText = "Checking...";
 
             try {
                 const userRef = doc(db, "users", currentUser.uid);
@@ -226,17 +239,16 @@
                             name: pData.name, 
                             daily: parseFloat(pData.daily), 
                             days: pData.days,
-                            purchaseDate: new Date().toISOString(),
-                            status: 'active'
+                            purchaseDate: new Date().toISOString()
                         })
                     });
-                    alert("Success! Plan Activated.");
+                    alert("Investment Successful!");
                     closeModal();
                 } else {
-                    alert("Insufficient Balance! Please recharge first.");
+                    alert("Insufficient Balance! Please recharge.");
                 }
             } catch (e) { alert("Error: " + e.message); }
-            btn.disabled = false; btn.innerText = "ACTIVATE PLAN";
+            btn.disabled = false; btn.innerText = "ACTIVATE NOW";
         }
 
         onAuthStateChanged(auth, (u) => { if(u) currentUser = u; else window.location.href="login.html"; });
