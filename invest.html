@@ -3,144 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invest | D2 INVEST</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Invest | D2 INVEST</title> <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         :root {
-            --brand-primary: #0047FF;
-            --brand-dark: #0a0e14;
+            --primary: #0d2542;
+            --accent: #f1c40f;
+            --bg-gradient: linear-gradient(135deg, #0d2542 0%, #1a4a80 100%);
+            --white: #ffffff;
+            --text-muted: #64748b;
             --success: #10b981;
-            --danger: #ef4444;
-            --bg-light: #f4f7fa;
+            --hot: #ff4757;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg-light); padding-bottom: 100px; color: #1e293b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: #f4f7f6; padding-bottom: 100px; }
 
         header {
-            background: #fff; padding: 15px 20px; display: flex; align-items: center;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 1000;
+            background: var(--white); padding: 12px 20px;
+            display: flex; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky; top: 0; z-index: 1000;
         }
-        .logo-img { width: 38px; height: 38px; border-radius: 8px; margin-right: 12px; object-fit: cover; }
-        .brand-name { font-weight: 800; font-size: 20px; color: var(--brand-dark); }
 
-        .tab-container { display: flex; gap: 10px; padding: 20px 15px; max-width: 500px; margin: 0 auto; }
-        .tab-btn {
-            flex: 1; padding: 14px; border: none; border-radius: 12px;
-            font-weight: 700; cursor: pointer; background: #e2e8f0; color: #64748b;
+        .logo-container {
+            width: 45px; height: 45px; 
+            border-radius: 50%; background: var(--accent); 
+            margin-right: 12px; padding: 2px;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
         }
-        .tab-btn.active { background: var(--brand-primary); color: white; box-shadow: 0 4px 15px rgba(0, 71, 255, 0.2); }
+        .logo-inner {
+            width: 100%; height: 100%; background: #fff;
+            border-radius: 50%; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .logo-inner img { 
+            width: 100%; height: 100%; 
+            object-fit: cover;
+            border-radius: 50%; 
+        }
+
+        .tab-container { display: flex; gap: 10px; padding: 20px; max-width: 500px; margin: 0 auto; }
+        .tab-btn {
+            flex: 1; padding: 14px; border: none; border-radius: 15px;
+            font-weight: 700; cursor: pointer; transition: 0.3s;
+            background: #e2e8f0; color: var(--primary);
+        }
+        .tab-btn.active { background: var(--bg-gradient); color: white; transform: scale(1.02); box-shadow: 0 5px 15px rgba(13,37,66,0.2); }
 
         .plans-grid { display: grid; grid-template-columns: 1fr; gap: 20px; padding: 0 15px; max-width: 500px; margin: 0 auto; }
         
         .plan-card {
-            background: white; border-radius: 28px; overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.02);
+            background: white; border-radius: 25px; overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06); animation: slideUp 0.5s ease-out;
+            border: 1px solid rgba(0,0,0,0.03); margin-bottom: 15px;
+            position: relative;
         }
-        .plan-img-box { position: relative; height: 180px; background: #eee; }
-        .plan-img-box img { width: 100%; height: 100%; object-fit: cover; }
-        .price-tag { 
-            position: absolute; bottom: 15px; left: 15px; background: var(--brand-primary); 
-            color: white; padding: 6px 15px; border-radius: 10px; font-weight: 700;
+        .badge {
+            position: absolute; top: 15px; right: 15px;
+            background: var(--hot); color: white; padding: 5px 12px;
+            border-radius: 20px; font-size: 10px; font-weight: 800;
+            z-index: 10; text-transform: uppercase;
         }
-
-        .plan-content { padding: 20px; }
-        .plan-title { font-size: 19px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
-        .plan-desc { font-size: 12px; color: #64748b; line-height: 1.5; margin-bottom: 15px; }
+        .plan-img { width: 100%; height: 180px; object-fit: cover; background: #e2e8f0; display: block; }
+        .plan-details { padding: 18px; }
+        .plan-title { font-size: 19px; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
         
-        .mini-stats { 
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f8fafc; 
-            padding: 15px; border-radius: 20px; margin-bottom: 15px;
-        }
-        .ms-item span { display: block; font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
-        .ms-item b { font-size: 14px; color: #1e293b; }
+        .plan-info { display: flex; justify-content: space-between; background: #f8fafc; padding: 12px; border-radius: 15px; }
+        .info-item span { display: block; font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+        .info-item b { font-size: 15px; color: #1e293b; }
 
         .buy-btn {
-            width: 100%; background: var(--brand-dark); border: none;
-            padding: 16px; border-radius: 15px; font-weight: 700;
-            color: white; cursor: pointer; font-size: 15px;
+            width: 100%; background: var(--accent); border: none;
+            padding: 14px; border-radius: 15px; margin-top: 15px;
+            font-weight: 800; color: var(--primary); cursor: pointer;
+            box-shadow: 0 4px 10px rgba(241, 196, 15, 0.3); transition: 0.2s;
         }
+        .buy-btn:active { transform: scale(0.98); }
 
         .modal {
             display: none; position: fixed; z-index: 2000; left: 0; top: 0;
-            width: 100%; height: 100%; background: rgba(0,0,0,0.85);
+            width: 100%; height: 100%; background: rgba(0,0,0,0.8);
             align-items: center; justify-content: center; padding: 20px;
         }
         .modal-content {
             background: white; width: 100%; max-width: 380px;
-            border-radius: 30px; padding: 25px; text-align: center;
+            border-radius: 30px; padding: 30px; text-align: center;
+            animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .detail-list { text-align: left; margin: 20px 0; background: #f1f5f9; padding: 18px; border-radius: 20px; }
-        .dl-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #cbd5e1; }
+        .modal-detail-box {
+            background: #f1f5f9; border-radius: 20px; padding: 20px;
+            margin: 20px 0; text-align: left;
+        }
+        .modal-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+        .modal-row span { color: #64748b; }
+        .modal-row b { color: var(--primary); }
+        
+        .confirm-buy-btn {
+            width: 100%; padding: 16px; background: var(--primary); color: white;
+            border: none; border-radius: 15px; font-weight: 700; cursor: pointer;
+        }
+
+        #success-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; z-index: 3000; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+        }
+        .success-circle {
+            width: 100px; height: 100px; background: var(--success);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 50px; margin-bottom: 20px;
+            animation: scaleCheck 0.5s ease-out forwards;
+        }
 
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: white; height: 75px; display: flex;
             justify-content: space-around; align-items: center;
-            border-top: 1px solid #eee; z-index: 1000;
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.08); z-index: 1000;
         }
-        .nav-link { text-decoration: none; color: #94a3b8; text-align: center; font-size: 11px; font-weight: 600; }
-        .nav-link i { font-size: 20px; display: block; margin-bottom: 4px; }
-        .nav-link.active { color: var(--brand-primary); }
+        .nav-link { text-decoration: none; color: #94a3b8; text-align: center; flex: 1; }
+        .nav-link i { font-size: 22px; display: block; margin-bottom: 4px; }
+        .nav-link span { font-size: 11px; font-weight: 600; }
+        .nav-link.active { color: var(--primary); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes scaleCheck { 0% { transform: scale(0); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
     <header>
-        <img src="d2 logo.png" class="logo-img" alt="D2" onerror="this.src='https://via.placeholder.com/40'">
-        <div class="brand-name">D2 INVEST</div>
+        <div class="logo-container">
+            <div class="logo-inner">
+                <img src="d2 logo.png" alt="D2">
+            </div>
+        </div>
+        <div style="font-weight: 800; color: var(--primary); font-size: 18px; letter-spacing: 0.5px;">D2 INVEST</div>
     </header>
 
     <div class="tab-container">
-        <button class="tab-btn active" onclick="showTab('buy')">Investment Plans</button>
-        <button class="tab-btn" onclick="showTab('active')">My Portfolio</button>
+        <button class="tab-btn active" id="buy-btn-tab" onclick="showTab('buy')">Investment Plans</button>
+        <button class="tab-btn" id="active-btn-tab" onclick="showTab('active')">My Active Plans</button>
     </div>
 
-    <div id="buy-plans-section" class="plans-grid"></div>
+    <div id="buy-plans-section" class="plans-grid">
+        <div class="plan-card">
+            <img src="https://images.pexels.com/photos/379419/pexels-photo-379419.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">Fuel Mini</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹200</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹100</b></div>
+                    <div class="info-item"><span>Days</span><b>10 Days</b></div>
+                </div>
+                <button class="buy-btn" onclick="openModal('Fuel Mini', 200, 100, 10, 1000)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <div class="badge" style="background:#e23744;">New</div>
+            <img src="https://images.pexels.com/photos/4393426/pexels-photo-4393426.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">Zomato Special</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹250</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹175</b></div>
+                    <div class="info-item"><span>Days</span><b>2 Days</b></div>
+                </div>
+                <button class="buy-btn" style="background:#e23744; color:white;" onclick="openModal('Zomato Special', 250, 175, 2, 350)">ACTIVATE NOW</button>
+            </div>
+        </div>
+
+        <div class="plan-card">
+            <img src="https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=500" class="plan-img">
+            <div class="plan-details">
+                <div class="plan-title">AI For Future</div>
+                <div class="plan-info">
+                    <div class="info-item"><span>Cost</span><b>₹399</b></div>
+                    <div class="info-item"><span>Daily</span><b>₹133</b></div>
+                    <div class="info-item"><span>Days</span><b>12 Days</b></div>
+                </div>
+                <button class="buy-btn" onclick="openModal('AI For Future', 399, 133, 12, 1600)">ACTIVATE NOW</button>
+            </div>
+        </div>
+        </div>
 
     <div id="active-plans-section" style="display:none;">
         <div id="active-list" class="plans-grid"></div>
-        <div id="no-active" style="text-align:center; padding:100px 20px; color:#94a3b8;">
-            <p>Aapke paas koi active plan nahi hai.</p>
+        <div id="no-active" style="text-align:center; padding:50px; color:#94a3b8;">
+            <i class="fa-solid fa-folder-open" style="font-size:60px; margin-bottom:15px;"></i>
+            <p>Koi active plan nahi mila.<br>Investment shuru karein!</p>
         </div>
     </div>
 
     <div class="modal" id="order-modal">
         <div class="modal-content">
-            <h3 id="m-name" style="font-size:22px; font-weight:800;">Plan Breakdown</h3>
-            <div class="detail-list">
-                <div class="dl-row"><span>Invest Amount:</span><b id="m-price">₹0</b></div>
-                <div class="dl-row"><span>Daily Profit:</span><b id="m-daily" style="color:var(--success);">₹0</b></div>
-                <div class="dl-row"><span>Hourly Income:</span><b id="m-hourly">₹0</b></div>
-                <div class="dl-row"><span>Total Returns:</span><b id="m-total">₹0</b></div>
-                <div class="dl-row"><span>Validity:</span><b id="m-days">0 Days</b></div>
+            <div style="font-size:50px; color:var(--accent); margin-bottom:10px;"><i class="fa-solid fa-bolt-lightning"></i></div>
+            <h2 style="color:var(--primary);">Confirm Order</h2>
+            <div class="modal-detail-box">
+                <div class="modal-row"><span>Plan Name:</span><b id="m-name">-</b></div>
+                <div class="modal-row"><span>Investment:</span><b id="m-price">₹0</b></div>
+                <div class="modal-row"><span>Daily Income:</span><b id="m-daily">₹0</b></div>
+                <div class="modal-row"><span>Total Returns:</span><b id="m-total" style="color:var(--success);">₹0</b></div>
+                <div class="modal-row"><span>Validity:</span><b id="m-days">0 Days</b></div>
             </div>
-            <button class="buy-btn" id="confirm-buy-btn" style="background:var(--brand-primary);">ACTIVATE NOW</button>
-            <p onclick="closeModal()" style="margin-top:15px; color:var(--danger); font-weight:700; cursor:pointer;">Close</p>
+            <button class="confirm-buy-btn" id="confirm-buy-btn">CONFIRM & ACTIVATE</button>
+            <p onclick="closeModal()" style="margin-top:15px; color:#ef4444; font-weight:600; cursor:pointer;">Cancel</p>
         </div>
+    </div>
+
+    <div id="success-overlay">
+        <div class="success-circle"><i class="fa-solid fa-check"></i></div>
+        <h2 style="color:var(--primary); font-weight:800;">Plan Activated!</h2>
+        <p style="color:var(--text-muted); margin-top:10px;">Investment shuru ho chuka hai.</p>
+        <button class="confirm-buy-btn" onclick="hideSuccess()" style="width:200px; margin-top:30px;">Great!</button>
     </div>
 
     <nav class="bottom-nav">
         <a href="home.html" class="nav-link"><i class="fa-solid fa-house"></i><span>Home</span></a>
-        <a href="invest.html" class="nav-link active"><i class="fa-solid fa-chart-line"></i><span>Invest</span></a>
-        <a href="refer.html" class="nav-link"><i class="fa-solid fa-users"></i><span>Refer</span></a>
-        <a href="account.html" class="nav-link"><i class="fa-solid fa-user"></i><span>Account</span></a>
+        <a href="invest.html" class="nav-link active"><i class="fa-solid fa-chart-pie"></i><span>Invest</span></a>
+        <a href="refer.html" class="nav-link"><i class="fa-solid fa-gift"></i><span>Refer</span></a>
+        <a href="account.html" class="nav-link"><i class="fa-solid fa-user-gear"></i><span>Account</span></a>
     </nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, arrayUnion, onSnapshot, increment, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // Aapka naya Firebase Config yahan update kar diya gaya hai
         const firebaseConfig = {
             apiKey: "AIzaSyDHjoV-8VeURo26qpor9b_ED41h3uATgG8",
             authDomain: "d2-invest.firebaseapp.com",
             projectId: "d2-invest",
             storageBucket: "d2-invest.firebasestorage.app",
             messagingSenderId: "809739613599",
-            appId: "1:809739613599:web:1415d8dc12c0d82f8af9aa"
+            appId: "1:809739613599:web:1415d8dc12c0d82f8af9aa",
+            measurementId: "G-SDKNQSC05G"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -150,80 +253,42 @@
         let currentUser = null;
         let pData = {};
 
-        // EXACT 24 PLANS IN SEQUENCE
-        const planList = [
-            { name: "Swiggy Starter", price: 350, total: 800, days: 8, img: "https://images.unsplash.com/photo-1590541336465-181534015f8a?w=500", desc: "Short term logistics." },
-            { name: "Zomato Growth", price: 599, total: 1600, days: 14, img: "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=500", desc: "Food delivery expansion." },
-            { name: "Netflix Stream", price: 699, total: 1450, days: 10, img: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=500", desc: "Digital content rights." },
-            { name: "Cloud Server", price: 999, total: 2200, days: 12, img: "https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=500", desc: "Technical infrastructure." },
-            { name: "Tata Power 5G", price: 1200, total: 1200*2.3, days: 15, img: "https://images.unsplash.com/photo-1549495514-6997637841c7?w=500", desc: "2.3x High yield broadband." },
-            { name: "Airtel Xstream", price: 1250, total: 1250*2.3, days: 15, img: "https://images.unsplash.com/photo-1520869562399-e772f042f422?w=500", desc: "Fiber optic investment." },
-            { name: "Jio Fiber Max", price: 1300, total: 1300*2.3, days: 15, img: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=500", desc: "Satellite internet project." },
-            { name: "Adani Green X", price: 1400, total: 1400*2.3, days: 15, img: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=500", desc: "Solar grid fund." },
-            { name: "Reliance Jio", price: 1500, total: 3800, days: 15, img: "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=500", desc: "5G network rollout." },
-            { name: "Tesla Powerwall", price: 2200, total: 5800, days: 18, img: "https://images.unsplash.com/photo-1539139560574-df99d214f854?w=500", desc: "Battery tech research." },
-            { name: "Amazon Ware", price: 2800, total: 7500, days: 20, img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500", desc: "E-commerce logistics." },
-            { name: "Apple M3 Chip", price: 3500, total: 10000, days: 22, img: "https://images.unsplash.com/photo-1611186871348-b1ec696e52c9?w=500", desc: "Chip manufacturing." },
-            { name: "Nvidia GPU Hub", price: 4200, total: 12500, days: 24, img: "https://images.unsplash.com/photo-1591488320449-011701bb6704?w=500", desc: "AI compute processing." },
-            { name: "Bitcoin Vault", price: 5000, total: 15500, days: 25, img: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=500", desc: "Crypto mining node." },
-            { name: "Starlink Space", price: 5800, total: 18000, days: 28, img: "https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?w=500", desc: "Low orbit satellite." },
-            { name: "SpaceX Mars", price: 6500, total: 21000, days: 30, img: "https://images.unsplash.com/photo-1517976487492-5750f3195933?w=500", desc: "Rocket propulsion." },
-            { name: "Meta VR Core", price: 7200, total: 24000, days: 32, img: "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?w=500", desc: "Metaverse development." },
-            { name: "Gold Standard", price: 8000, total: 28000, days: 35, img: "https://images.unsplash.com/photo-1589118949245-7d38baf380d6?w=500", desc: "Safe haven asset." },
-            { name: "Hydrogen Hub", price: 8800, total: 32000, days: 38, img: "https://images.unsplash.com/photo-1634467524884-897d0af5e104?w=500", desc: "Clean energy plant." },
-            { name: "Adani Wind", price: 9500, total: 36000, days: 40, img: "https://images.unsplash.com/photo-1466611653911-954ffea1127b?w=500", desc: "Wind turbine farm." },
-            { name: "Microsoft AI", price: 10500, total: 42000, days: 45, img: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500", desc: "AI software cycle." },
-            { name: "Google Quantum", price: 12000, total: 50000, days: 50, img: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=500", desc: "Quantum research lab." },
-            { name: "Diamond Mine", price: 15000, total: 65000, days: 60, img: "https://images.unsplash.com/photo-1588615419957-550e5041f021?w=500", desc: "Resource extraction." },
-            { name: "D2 Legacy", price: 20000, total: 100000, days: 75, img: "https://images.unsplash.com/photo-1454165833767-1246991901a1?w=500", desc: "Elite wealth fund." }
-        ];
+        onAuthStateChanged(auth, (user) => {
+            if (user) { currentUser = user; loadActivePlans(); } 
+            else { window.location.href = "login.html"; }
+        });
 
-        function renderPlans() {
-            const container = document.getElementById('buy-plans-section');
-            planList.sort((a,b) => a.price - b.price).forEach((p) => {
-                const daily = (p.total / p.days).toFixed(2);
-                container.innerHTML += `
-                    <div class="plan-card">
-                        <div class="plan-img-box">
-                            <span class="price-tag">₹${p.price}</span>
-                            <img src="${p.img}" onerror="this.src='https://via.placeholder.com/500x180/0047FF/FFFFFF?text=${p.name}'">
-                        </div>
-                        <div class="plan-content">
-                            <div class="plan-title">${p.name}</div>
-                            <div class="mini-stats">
-                                <div class="ms-item"><span>Daily</span><b style="color:var(--success);">₹${daily}</b></div>
-                                <div class="ms-item"><span>Days</span><b>${p.days}d</b></div>
-                            </div>
-                            <button class="buy-btn" onclick="openModal('${p.name}', ${p.price}, ${daily}, ${p.days}, ${p.total})">DETAILS</button>
-                        </div>
-                    </div>`;
-            });
+        window.showTab = (tab) => {
+            document.getElementById('buy-plans-section').style.display = tab === 'buy' ? 'grid' : 'none';
+            document.getElementById('active-plans-section').style.display = tab === 'active' ? 'block' : 'none';
+            document.getElementById('buy-btn-tab').classList.toggle('active', tab === 'buy');
+            document.getElementById('active-btn-tab').classList.toggle('active', tab === 'active');
         }
-        renderPlans();
 
         window.openModal = (name, price, daily, days, total) => {
             pData = { name, price, daily, days, total };
             document.getElementById('m-name').innerText = name;
             document.getElementById('m-price').innerText = "₹" + price;
             document.getElementById('m-daily').innerText = "₹" + daily;
-            document.getElementById('m-hourly').innerText = "₹" + (daily/24).toFixed(2);
-            document.getElementById('m-total').innerText = "₹" + Math.round(total);
+            document.getElementById('m-total').innerText = "₹" + total;
             document.getElementById('m-days').innerText = days + " Days";
             document.getElementById('order-modal').style.display = 'flex';
         }
 
         window.closeModal = () => { document.getElementById('order-modal').style.display = 'none'; }
+        window.hideSuccess = () => { document.getElementById('success-overlay').style.display = 'none'; showTab('active'); }
 
         document.getElementById('confirm-buy-btn').onclick = async () => {
-            if (!currentUser) return;
             const btn = document.getElementById('confirm-buy-btn');
-            btn.disabled = true; btn.innerText = "Checking...";
+            btn.disabled = true; btn.innerText = "Activating...";
 
             try {
                 const userRef = doc(db, "users", currentUser.uid);
                 const snap = await getDoc(userRef);
-                const userData = snap.data();
 
+                if (!snap.exists()) { alert("User record not found."); btn.disabled = false; return; }
+
+                const userData = snap.data();
                 if ((userData.balance || 0) >= pData.price) {
                     await updateDoc(userRef, {
                         balance: increment(-pData.price),
@@ -232,21 +297,63 @@
                             name: pData.name, 
                             daily: parseFloat(pData.daily), 
                             days: pData.days,
-                            purchaseDate: new Date().toISOString()
+                            purchaseDate: new Date().toISOString(),
+                            status: 'active'
                         })
                     });
-                    alert("Success!"); closeModal();
-                } else { alert("Balance low!"); }
-            } catch (e) { alert("Error"); }
-            btn.disabled = false; btn.innerText = "ACTIVATE NOW";
+
+                    if (userData.referredBy) {
+                        const refCode = userData.referredBy.toUpperCase();
+                        const q = query(collection(db, "users"), where("myReferralCode", "==", refCode));
+                        const qSnap = await getDocs(q);
+                        if (!qSnap.empty) {
+                            const inviterRef = doc(db, "users", qSnap.docs[0].id);
+                            if (!userData.activePlans || userData.activePlans.length === 0) {
+                                await updateDoc(inviterRef, {
+                                    balance: increment(50),
+                                    totalEarnings: increment(50)
+                                });
+                            }
+                        }
+                    }
+
+                    document.getElementById('success-overlay').style.display = 'flex';
+                    closeModal();
+                } else {
+                    alert("Insufficient Balance! Please recharge.");
+                }
+            } catch (e) {
+                alert("Error: " + e.message);
+            }
+            btn.disabled = false; btn.innerText = "CONFIRM & ACTIVATE";
         }
 
-        onAuthStateChanged(auth, (u) => { if(u) currentUser = u; else window.location.href="login.html"; });
-
-        window.showTab = (tab) => {
-            document.getElementById('buy-plans-section').style.display = tab === 'buy' ? 'grid' : 'none';
-            document.getElementById('active-plans-section').style.display = tab === 'active' ? 'block' : 'none';
-        };
+        function loadActivePlans() {
+            onSnapshot(doc(db, "users", currentUser.uid), (snap) => {
+                const list = document.getElementById('active-list');
+                const noActive = document.getElementById('no-active');
+                list.innerHTML = "";
+                if(!snap.exists()) return;
+                const data = snap.data();
+                if (data.activePlans && data.activePlans.length > 0) {
+                    noActive.style.display = "none";
+                    data.activePlans.forEach(p => {
+                        list.innerHTML += `
+                        <div class="plan-card" style="border-left: 5px solid var(--success); padding:20px;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div class="plan-title">${p.name} <span style="font-size:10px; color:green;">● ACTIVE</span></div>
+                                <i class="fa-solid fa-circle-check" style="color:var(--success);"></i>
+                            </div>
+                            <div class="plan-info">
+                                <div class="info-item"><span>Daily Profit</span><b style="color:var(--success);">₹${p.daily}</b></div>
+                                <div class="info-item"><span>Status</span><b style="color:#10b981;">Earning</b></div>
+                            </div>
+                            <div style="margin-top:10px; font-size:10px; color:#94a3b8;">Date: ${new Date(p.purchaseDate).toLocaleDateString()}</div>
+                        </div>`;
+                    });
+                } else { noActive.style.display = "block"; }
+            });
+        }
     </script>
 </body>
 </html>
