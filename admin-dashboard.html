@@ -129,13 +129,14 @@
 <div id="userModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeModal()">&times;</span>
-        <h2 id="m-user-id" style="margin-bottom: 15px; font-size: 18px;">User Details</h2>
+        <h2 style="margin-bottom: 15px; font-size: 18px;">User Profile</h2>
         <hr><br>
         <div id="user-info-box">
-            <p><strong>Contact:</strong> <span id="m-email"></span></p>
-            <p><strong>Balance:</strong> ₹<span id="m-balance"></span></p>
-            <p><strong>Ref Code:</strong> <span id="m-refcode"></span></p>
-            <p><strong>Investments:</strong> <div id="m-invest" style="margin-top:10px; font-size:12px;">Fetching...</div></p>
+            <p><strong>Contact:</strong> <span id="m-email">...</span></p>
+            <p><strong>Balance:</strong> ₹<span id="m-balance">0</span></p>
+            <p><strong>Ref Code:</strong> <span id="m-refcode">...</span></p>
+            <p style="margin-top:15px;"><strong>Investments:</strong></p>
+            <div id="m-invest" style="margin-top:10px; font-size:12px;">No active investments</div>
         </div>
     </div>
 </div>
@@ -158,12 +159,13 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Auth Check
+    // Master Admin Auth Check
     onAuthStateChanged(auth, (user) => {
-        if (!user || user.email !== "adminkd@gmail.com") window.location.href = "adminlogin.html";
+        if (!user || user.email !== "adminkd@gmail.com") {
+            window.location.href = "adminlogin.html";
+        }
     });
 
-    // Tab Switching
     window.switchTab = (tabId, el) => {
         document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
@@ -171,7 +173,7 @@
         el.classList.add('active');
     };
 
-    // Stats Logic
+    // Real-time Stats
     onSnapshot(query(collection(db, "deposits"), where("status", "==", "success")), (snap) => {
         let total = 0, today = 0;
         const startOfDay = new Date().setHours(0,0,0,0);
@@ -181,11 +183,11 @@
             total += amt;
             if (data.timestamp && data.timestamp.seconds * 1000 >= startOfDay) today += amt;
         });
-        document.getElementById('total-dep-sum').innerText = "₹" + total;
-        document.getElementById('today-dep-sum').innerText = "₹" + today;
+        document.getElementById('total-dep-sum').innerText = "₹" + total.toLocaleString();
+        document.getElementById('today-dep-sum').innerText = "₹" + today.toLocaleString();
     });
 
-    // Users List Logic
+    // Load Users List
     onSnapshot(collection(db, "users"), snap => {
         document.getElementById('total-users').innerText = snap.size;
         const body = document.getElementById('users-table-body');
@@ -195,7 +197,7 @@
             body.innerHTML += `<tr>
                 <td>${u.id.substring(0,8)}...</td>
                 <td>${data.email || data.phone || 'N/A'}</td>
-                <td>₹${data.balance || 0}</td>
+                <td>₹${(data.balance || 0).toFixed(2)}</td>
                 <td>
                     <button class="btn-act btn-view" onclick="viewUser('${u.id}')">VIEW</button>
                     <button class="btn-act btn-delete" onclick="deleteUserAccount('${u.id}')">DELETE</button>
@@ -217,7 +219,7 @@
         let text = "";
         invs.forEach(i => {
             const invData = i.data();
-            text += `<div style="background:#f4f7f6; padding:5px; margin-bottom:5px; border-radius:5px;">
+            text += `<div style="background:#f4f7f6; padding:8px; margin-bottom:5px; border-radius:5px; border-left: 2px solid var(--accent)">
                         <b>Plan:</b> ${invData.planName} | <b>Amt:</b> ₹${invData.amount}
                       </div>`;
         });
@@ -226,7 +228,7 @@
 
     window.closeModal = () => document.getElementById('userModal').style.display = 'none';
 
-    // DEPOSIT APPROVAL (FIXED LOGIC)
+    // Deposit Logic
     onSnapshot(query(collection(db, "deposits"), where("status", "==", "Pending")), snap => {
         const body = document.getElementById('dep-table-body');
         body.innerHTML = "";
@@ -237,7 +239,7 @@
                 <td>₹${row.amount}</td>
                 <td>${row.utr}</td>
                 <td>
-                    <button class="btn-act btn-approve" onclick="approveDep('${d.id}', '${row.uid}', ${row.amount})">ADD</button>
+                    <button class="btn-act btn-approve" onclick="approveDep('${d.id}', '${row.uid}', ${row.amount})">APPROVE</button>
                     <button class="btn-act btn-reject" onclick="rejectReq('deposits', '${d.id}')">REJECT</button>
                 </td>
             </tr>`;
@@ -245,29 +247,26 @@
     });
 
     window.approveDep = async (docId, uid, amt) => {
-        if(!confirm("Approve ₹" + amt + " for User: " + uid + "?")) return;
+        if(!confirm("Approve ₹" + amt + " for User ID: " + uid + "?")) return;
         try {
-            // Document reference check
             const userRef = doc(db, "users", uid);
             const userSnap = await getDoc(userRef);
 
             if (!userSnap.exists()) {
-                alert("Galti: Ye User ID '" + uid + "' database mein nahi mili! Is request ko REJECT kar dein.");
+                alert("Critical Error: User profile not found! Please check user ID.");
                 return;
             }
 
             const batch = writeBatch(db);
-            // 1. Balance update (users collection)
-            batch.update(userRef, { balance: increment(Number(amt)) });
-            // 2. Deposit status update (deposits collection)
+            batch.update(userRef, { balance: increment(parseFloat(amt)) });
             batch.update(doc(db, "deposits", docId), { status: "success", timestamp: serverTimestamp() });
             
             await batch.commit();
-            alert("Success! Balance Added.");
+            alert("Payment Approved! Balance Added Successfully.");
         } catch (e) { alert("Error: " + e.message); }
     };
 
-    // WITHDRAWAL LOGIC
+    // Withdrawal Logic
     onSnapshot(query(collection(db, "withdrawals"), where("status", "==", "Pending")), snap => {
         const body = document.getElementById('with-table-body');
         body.innerHTML = "";
@@ -290,28 +289,37 @@
     });
 
     window.actionWith = async (id, stat, uid, amt) => {
+        const msg = stat === 'Success' ? "Mark as paid?" : "Reject and refund?";
+        if(!confirm(msg)) return;
+        
         try {
             const batch = writeBatch(db);
             batch.update(doc(db, "withdrawals", id), { status: stat });
-            // Agar reject ho toh paise wapas user balance mein
-            if(stat === 'Rejected' && uid) batch.update(doc(db, "users", uid), { balance: increment(Number(amt)) });
+            if(stat === 'Rejected' && uid) {
+                batch.update(doc(db, "users", uid), { balance: increment(parseFloat(amt)) });
+            }
             await batch.commit();
-            alert("Withdrawal Updated!");
-        } catch (e) { alert("Error."); }
+            alert("Withdrawal Processed!");
+        } catch (e) { alert("Error processing withdrawal."); }
     };
 
     window.rejectReq = async (coll, id) => {
-        if(!confirm("Reject this request?")) return;
+        if(!confirm("Are you sure you want to REJECT this request?")) return;
         await updateDoc(doc(db, coll, id), { status: "rejected" });
-        alert("Rejected!");
+        alert("Request Rejected.");
     };
 
     window.deleteUserAccount = async (uid) => {
-        if(!confirm("Are you sure? This will delete the user profile.")) return;
-        try { await deleteDoc(doc(db, "users", uid)); alert("User Deleted!"); } catch (e) { alert("Error."); }
+        if(!confirm("WARNING: This will permanently delete the user's balance and profile. Continue?")) return;
+        try { await deleteDoc(doc(db, "users", uid)); alert("User Account Deleted."); } catch (e) { alert("Error deleting user."); }
     };
 
-    window.adminLogout = () => { signOut(auth).then(() => window.location.href = "adminlogin.html"); };
+    window.adminLogout = () => { 
+        signOut(auth).then(() => {
+            localStorage.clear();
+            window.location.href = "adminlogin.html";
+        }); 
+    };
 </script>
 </body>
 </html>
