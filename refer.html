@@ -186,14 +186,15 @@
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, collection, query, where, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Updated Firebase Config for d2-invest
+        // Updated Firebase Config
         const firebaseConfig = {
-            apiKey: "AIzaSyC7Nf8Y0V3X1W4Z9Q2L5M0P7K8J9H2G1F0",
-            authDomain: "d2-invest-7e2f5.firebaseapp.com",
-            projectId: "d2-invest-7e2f5",
-            storageBucket: "d2-invest-7e2f5.firebasestorage.app",
-            messagingSenderId: "882299110033",
-            appId: "1:882299110033:web:9f8e7d6c5b4a3a2a1"
+            apiKey: "AIzaSyDHjoV-8VeURo26qpor9b_ED41h3uATgG8",
+            authDomain: "d2-invest.firebaseapp.com",
+            projectId: "d2-invest",
+            storageBucket: "d2-invest.firebasestorage.app",
+            messagingSenderId: "809739613599",
+            appId: "1:809739613599:web:1415d8dc12c0d82f8af9aa",
+            measurementId: "G-SDKNQSC05G"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -265,6 +266,7 @@
 
         window.claimReward = async (friendId) => {
             if (!currentUserId) return;
+
             const targetBtn = event.target;
             targetBtn.disabled = true;
             targetBtn.innerText = "Claiming...";
@@ -276,10 +278,11 @@
                     totalEarnings: increment(50),
                     claimedReferrals: arrayUnion(friendId)
                 });
+
                 alert("₹50 added to your wallet successfully!");
             } catch (err) {
                 console.error(err);
-                alert("Error claiming reward.");
+                alert("Error claiming reward. Try again.");
                 targetBtn.disabled = false;
                 targetBtn.innerText = "CLAIM ₹50";
             }
