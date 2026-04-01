@@ -4,249 +4,161 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home | D2 INVEST</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="manifest" href="manifest.json">
     
     <style>
         :root {
-            --brand-primary: #0047FF; /* Modern Tech Blue */
-            --brand-secondary: #00d2ff;
-            --dark-surface: #0a0e14;
-            --card-bg: #ffffff;
-            --text-main: #1a1a1a;
-            --text-muted: #64748b;
+            --primary: #0d2542;
+            --primary-light: #1a4a80;
+            --accent: #f1c40f;
+            --bg-gradient: linear-gradient(135deg, #0d2542 0%, #1a4a80 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --text-dark: #333;
             --success: #10b981;
-            --accent: #f59e0b;
+            --cyan-glow: #00ffff;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        
-        body { 
-            background-color: #f8fafc; 
-            color: var(--text-main); 
-            padding-bottom: 100px;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: #f4f7f6; color: var(--text-dark); padding-bottom: 90px; overflow-x: hidden; }
 
-        /* --- Header --- */
         header {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            padding: 15px 20px;
+            background: var(--glass-bg); padding: 10px 20px;
             display: flex; align-items: center; justify-content: space-between;
-            position: sticky; top: 0; z-index: 1000;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000;
         }
-        .logo-area { display: flex; align-items: center; gap: 10px; }
-        .logo-inner { 
-            width: 38px; height: 38px; 
-            background: var(--brand-primary); 
-            border-radius: 10px; 
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 800; font-size: 14px;
-            box-shadow: 0 4px 10px rgba(0, 71, 255, 0.2);
-        }
-        .logo-inner img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
-        .brand-text { font-weight: 700; font-size: 18px; color: var(--dark-surface); letter-spacing: -0.5px; }
-        
-        #welcome-user { 
-            font-size: 12px; font-weight: 600; 
-            color: var(--brand-primary); 
-            background: rgba(0, 71, 255, 0.08); 
-            padding: 6px 14px; border-radius: 20px; 
-        }
+        .logo-area { display: flex; align-items: center; gap: 12px; }
+        .logo-container { width: 45px; height: 45px; padding: 2px; border-radius: 50%; background: var(--accent); }
+        .logo-inner { width: 100%; height: 100%; background: #fff; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid #fff; }
+        .logo-inner img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .brand-text { color: var(--primary); font-weight: 800; font-size: 18px; letter-spacing: 1px; }
 
-        main { max-width: 480px; margin: 0 auto; padding: 15px; }
+        main { max-width: 500px; margin: 20px auto; padding: 0 15px; }
 
-        /* --- Modern Portfolio Card --- */
-        .portfolio-section {
-            background: var(--dark-surface);
-            border-radius: 24px;
-            padding: 25px;
-            color: white;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(10, 14, 20, 0.15);
-            margin-bottom: 25px;
-        }
-        /* Design Element */
-        .portfolio-section::after {
-            content: ''; position: absolute; top: -50px; right: -50px;
-            width: 150px; height: 150px; background: var(--brand-primary);
-            filter: blur(60px); opacity: 0.4; pointer-events: none;
-        }
+        /* --- BALANCE CARD --- */
+        .balance-card { background: var(--bg-gradient); border-radius: 25px; padding: 30px 20px; color: white; text-align: center; box-shadow: 0 10px 25px rgba(13, 37, 66, 0.3); position: relative; overflow: hidden; animation: slideIn 0.8s ease-out; }
+        .bal-label { font-size: 13px; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; }
+        .bal-amount { font-size: 34px; font-weight: 800; margin: 5px 0; color: var(--accent); }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 15px; backdrop-filter: blur(5px); }
+        .stat-box h4 { font-size: 16px; color: #fff; margin-top: 4px; }
+        .stat-box p { font-size: 10px; opacity: 0.7; text-transform: uppercase; font-weight: 600; }
 
-        .bal-label { font-size: 13px; color: #94a3b8; font-weight: 500; margin-bottom: 5px; }
-        .bal-amount { font-size: 32px; font-weight: 700; margin-bottom: 20px; letter-spacing: -1px; }
-        
-        .stats-row { 
-            display: flex; gap: 15px; 
-            border-top: 1px solid rgba(255,255,255,0.1); 
-            padding-top: 20px; 
-        }
-        .stat-item { flex: 1; }
-        .stat-item p { font-size: 11px; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; font-weight: 600; }
-        .stat-item h4 { font-size: 16px; font-weight: 600; }
+        /* --- CLAIM NOTIFICATION --- */
+        #claim-notify { display: none; background: #fff3cd; padding: 15px; border-radius: 15px; margin-top: 20px; border: 1px solid #ffeeba; cursor: pointer; animation: pulse 2s infinite; }
+        .claim-flex { display: flex; align-items: center; gap: 12px; }
 
-        /* --- Daily Claim Notification --- */
-        #claim-notify {
-            display: none;
-            background: linear-gradient(90deg, #fff 0%, #fffbeb 100%);
-            border: 1px solid #fde68a;
-            padding: 16px; border-radius: 18px;
-            margin-bottom: 20px; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.1);
-        }
-        .claim-flex { display: flex; align-items: center; gap: 15px; }
-        .claim-icon { 
-            background: var(--accent); color: white; 
-            width: 40px; height: 40px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-        }
+        /* --- INFO SECTIONS --- */
+        .info-section { background: white; border-radius: 20px; padding: 20px; margin-top: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; }
+        .info-section h3 { color: var(--primary); font-size: 17px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .info-section h3 i { color: var(--accent); }
+        .info-content { font-size: 13.5px; line-height: 1.6; color: #555; }
+        .status-tag { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 5px 12px; border-radius: 50px; font-size: 11px; font-weight: 700; margin-top: 10px; border: 1px solid #c8e6c9; }
 
-        /* --- Info Cards --- */
-        .section-title { font-size: 15px; font-weight: 700; color: var(--text-muted); margin: 0 0 15px 5px; text-transform: uppercase; letter-spacing: 1px; }
-        
-        .feature-card {
-            background: white; border-radius: 20px; padding: 20px;
-            margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.03);
-            transition: transform 0.2s;
-        }
-        .feature-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-        .feature-header i { font-size: 18px; color: var(--brand-primary); }
-        .feature-header h3 { font-size: 16px; font-weight: 700; color: #1e293b; }
-        .feature-card p { font-size: 13px; color: #64748b; line-height: 1.6; }
-        
-        .status-badge {
-            display: inline-flex; align-items: center; gap: 5px;
-            background: #ecfdf5; color: #059669;
-            font-size: 11px; font-weight: 700; padding: 4px 10px;
-            border-radius: 8px; margin-top: 12px;
-        }
-
-        /* --- Bottom Nav --- */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: white; height: 80px;
-            display: flex; justify-content: space-around; align-items: center;
-            padding: 0 10px; border-top: 1px solid rgba(0,0,0,0.05);
-            z-index: 1000;
-        }
-        .nav-link { 
-            text-decoration: none; color: #94a3b8; 
-            display: flex; flex-direction: column; align-items: center; gap: 5px;
-            transition: 0.3s;
-        }
-        .nav-link i { font-size: 20px; }
-        .nav-link span { font-size: 11px; font-weight: 600; }
-        .nav-link.active { color: var(--brand-primary); }
-
-        /* --- PWA Banner --- */
+        /* --- INSTALL POPUP --- */
         #pwa-install-banner {
-            position: fixed; bottom: 95px; left: 15px; right: 15px;
-            background: #1e293b; color: white; border-radius: 16px;
-            padding: 12px 18px; display: none; align-items: center;
-            justify-content: space-between; z-index: 2000;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            position: fixed; bottom: 85px; left: 10px; right: 10px;
+            background: #0d2542; border: 2px solid var(--cyan-glow);
+            border-radius: 15px; padding: 12px 15px;
+            display: none; align-items: center; justify-content: space-between;
+            z-index: 2000; box-shadow: 0 5px 20px rgba(0,255,255,0.2);
+            animation: slideUp 0.5s ease;
         }
-        .pwa-install-btn {
-            background: var(--brand-primary); color: white;
-            border: none; padding: 8px 16px; border-radius: 10px;
-            font-weight: 700; font-size: 12px;
-        }
+        .pwa-info { display: flex; align-items: center; gap: 10px; }
+        .pwa-close-btn { color: #fff; font-size: 20px; cursor: pointer; padding-right: 10px; }
+        .pwa-app-icon { width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--cyan-glow); }
+        .pwa-text-area h4 { font-size: 13px; margin: 0; color: white; }
+        .pwa-text-area p { font-size: 10px; margin: 0; color: #aaa; }
+        .pwa-install-btn { background: var(--cyan-glow); color: #000; border: none; padding: 7px 18px; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        main > div { animation: fadeIn 0.5s ease forwards; }
+        /* --- NAV --- */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; height: 75px; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -5px 25px rgba(0,0,0,0.08); z-index: 1000; }
+        .nav-link { text-decoration: none; color: #94a3b8; text-align: center; flex: 1; font-size: 11px; }
+        .nav-link i { font-size: 22px; display: block; margin-bottom: 4px; }
+        .nav-link.active { color: var(--primary); }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo-area">
-            <div class="logo-inner">
-                <img src="d2 logo.png" alt="D2" onerror="this.style.display='none'; this.parentElement.innerText='D2'">
+            <div class="logo-container">
+                <div class="logo-inner"><img src="d2 logo.png" alt="D2" onerror="this.parentElement.innerHTML='<b>D2</b>'"></div>
             </div>
             <div class="brand-text">D2 INVEST</div>
         </div>
-        <div id="welcome-user">Hi, User</div>
+        <div id="welcome-user" style="font-size: 12px; font-weight: 700; color: var(--primary); background: #f0f4f8; padding: 6px 12px; border-radius: 10px;">Hi, User</div>
     </header>
 
     <main>
-        <div class="portfolio-section">
-            <p class="bal-label">Current Portfolio</p>
+        <div class="balance-card">
+            <p class="bal-label">Portfolio Balance</p>
             <h1 class="bal-amount" id="user-balance">₹ 0.00</h1>
-            
-            <div class="stats-row">
-                <div class="stat-item">
-                    <p>Invested</p>
-                    <h4 id="user-invested">₹ 0</h4>
-                </div>
-                <div class="stat-item" style="border-left: 1px solid rgba(255,255,255,0.1); padding-left: 15px;">
-                    <p>Total Returns</p>
-                    <h4 id="user-profit" style="color: var(--brand-secondary);">₹ 0</h4>
-                </div>
+            <div class="stats-grid">
+                <div class="stat-box"><p>Total Invested</p><h4 id="user-invested">₹ 0</h4></div>
+                <div class="stat-box" style="border-left: 1px solid rgba(255,255,255,0.2);"><p>Total Earnings</p><h4 id="user-profit" style="color: var(--accent);">₹ 0</h4></div>
             </div>
         </div>
 
         <div id="claim-notify" onclick="window.location.href='account.html'">
             <div class="claim-flex">
-                <div class="claim-icon"><i class="fa-solid fa-bolt-lightning"></i></div>
-                <div>
-                    <b style="font-size: 14px; color: #92400e;">Daily Profit Available</b>
-                    <p style="font-size: 12px; color: #b45309;">Your returns are ready to be claimed.</p>
-                </div>
+                <i class="fa-solid fa-coins" style="font-size: 24px; color: #856404;"></i>
+                <div class="claim-text"><b>Daily Profit Ready!</b><p style="font-size: 11px;">Click here to collect your daily income.</p></div>
             </div>
         </div>
 
-        <p class="section-title">Security & Benefits</p>
-
-        <div class="feature-card">
-            <div class="feature-header">
-                <i class="fa-solid fa-shield-check"></i>
-                <h3>Secure Infrastructure</h3>
+        <div class="info-section">
+            <h3><i class="fa-solid fa-shield-halved"></i> 100% Secure Trading</h3>
+            <div class="info-content">
+                Aapka capital AI-driven technical infrastructure mein secure rehta hai. D2 INVEST market ki sabse fast growth ka bharosa deta hai.
             </div>
-            <p>Aapka capital AI-driven technical infrastructure mein secure rehta hai. D2 INVEST market ki sabse fast growth ka bharosa deta hai.</p>
-            <div class="status-badge"><i class="fa-solid fa-circle-check"></i> Bank-Grade Security</div>
+            <div class="status-tag"><i class="fa-solid fa-circle-check"></i> System Verified</div>
         </div>
 
-        <div class="feature-card">
-            <div class="feature-header">
-                <i class="fa-solid fa-money-bill-transfer"></i>
-                <h3>Instant Payouts</h3>
+        <div class="info-section" style="border-left: 5px solid var(--accent);">
+            <h3><i class="fa-solid fa-bolt"></i> Instant Withdrawals</h3>
+            <div class="info-content">
+                Apne profit ko kisi bhi waqt seedha apne bank account mein transfer karein. No hidden charges, pure transparency.
             </div>
-            <p>Apne profit ko kisi bhi waqt seedha apne bank account mein transfer karein. No hidden charges, pure transparency.</p>
         </div>
 
-        <div class="feature-card" style="background: linear-gradient(135deg, #fff 60%, #eef2ff 100%);">
-            <div class="feature-header">
-                <i class="fa-solid fa-users"></i>
-                <h3>Referral Program</h3>
+        <div class="info-section">
+            <h3><i class="fa-solid fa-gift"></i> Referral Bonus</h3>
+            <div class="info-content">
+                Dosto ko invite karein aur har referral par ₹50 se ₹500 tak ka instant bonus payein. Team banayein, zyada kamayein!
             </div>
-            <p>Dosto ko invite karein aur har referral par ₹50 se ₹500 tak ka instant bonus payein. Team banayein, zyada kamayein!</p>
         </div>
     </main>
 
-    <nav class="bottom-nav">
-        <a href="home.html" class="nav-link active"><i class="fa-solid fa-house-chimney"></i><span>Home</span></a>
-        <a href="invest.html" class="nav-link"><i class="fa-solid fa-chart-line"></i><span>Invest</span></a>
-        <a href="refer.html" class="nav-link"><i class="fa-solid fa-hand-holding-dollar"></i><span>Refer</span></a>
-        <a href="account.html" class="nav-link"><i class="fa-solid fa-user-ninja"></i><span>Account</span></a>
-    </nav>
-
     <div id="pwa-install-banner">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <span id="close-banner" style="cursor: pointer; opacity: 0.6; font-size: 20px;">&times;</span>
-            <div style="font-size: 13px; font-weight: 500;">Install D2 Invest App</div>
+        <div class="pwa-info">
+            <span class="pwa-close-btn" id="close-banner">&times;</span>
+            <img src="d2 logo.png" class="pwa-app-icon" alt="Logo">
+            <div class="pwa-text-area">
+                <h4>D2 INVEST APP</h4>
+                <p>Fast Investing Experience</p>
+            </div>
         </div>
         <button class="pwa-install-btn" id="install-btn">Install</button>
     </div>
+
+    <nav class="bottom-nav">
+        <a href="home.html" class="nav-link active"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="invest.html" class="nav-link"><i class="fa-solid fa-chart-pie"></i><span>Invest</span></a>
+        <a href="refer.html" class="nav-link"><i class="fa-solid fa-gift"></i><span>Refer</span></a>
+        <a href="account.html" class="nav-link"><i class="fa-solid fa-user-gear"></i><span>Account</span></a>
+    </nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // Updated Firebase config for d2-invest
         const firebaseConfig = {
             apiKey: "AIzaSyDHjoV-8VeURo26qpor9b_ED41h3uATgG8",
             authDomain: "d2-invest.firebaseapp.com",
@@ -261,6 +173,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // --- PWA LOGIC (Session Based) ---
         let deferredPrompt;
         const banner = document.getElementById('pwa-install-banner');
 
@@ -285,6 +198,7 @@
             sessionStorage.setItem('pwaClosedInSession', 'true');
         });
 
+        // --- DATA LOGIC (Original) ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 onSnapshot(doc(db, "users", user.uid), (docSnap) => {
