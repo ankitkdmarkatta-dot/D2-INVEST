@@ -184,9 +184,9 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, collection, query, where, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, collection, query, where, updateDoc, increment, arrayUnion, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Updated Firebase Config
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyDHjoV-8VeURo26qpor9b_ED41h3uATgG8",
             authDomain: "d2-invest.firebaseapp.com",
@@ -243,7 +243,7 @@
                     if (alreadyClaimed) {
                         statusHTML = `<span class="status-claimed"><i class="fa-solid fa-check-circle"></i> ₹50 Claimed</span>`;
                     } else if (hasInvested) {
-                        statusHTML = `<button class="btn-claim" onclick="claimReward('${friendId}')">CLAIM ₹50</button>`;
+                        statusHTML = `<button class="btn-claim" onclick="claimReward(event, '${friendId}')">CLAIM ₹50</button>`;
                     } else {
                         statusHTML = `<span class="status-pending">Pending Invest</span>`;
                     }
@@ -264,22 +264,41 @@
             });
         }
 
-        window.claimReward = async (friendId) => {
+        window.claimReward = async (event, friendId) => {
             if (!currentUserId) return;
 
-            const targetBtn = event.target;
+            const targetBtn = event.currentTarget;
             targetBtn.disabled = true;
             targetBtn.innerText = "Claiming...";
 
             try {
                 const userRef = doc(db, "users", currentUserId);
+                const userSnap = await getDoc(userRef);
+                const userData = userSnap.data();
+
+                const previouslyClaimedCount = (userData.claimedReferrals || []).length;
+                
+                // Logic: Check if this is the 10th referral to give 3000 bonus
+                let rewardAmount = 50;
+                let isMegaBonus = false;
+
+                if (previouslyClaimedCount === 9) { // 9 already claimed + this 1 = 10
+                    rewardAmount = 3050; // 50 for direct + 3000 mega bonus
+                    isMegaBonus = true;
+                }
+
                 await updateDoc(userRef, {
-                    balance: increment(50),
-                    totalEarnings: increment(50),
+                    balance: increment(rewardAmount),
+                    totalEarnings: increment(rewardAmount),
                     claimedReferrals: arrayUnion(friendId)
                 });
 
-                alert("₹50 added to your wallet successfully!");
+                if (isMegaBonus) {
+                    alert("CONGRATULATIONS! You got ₹50 + ₹3,000 Mega Bonus!");
+                } else {
+                    alert("₹50 added to your wallet successfully!");
+                }
+
             } catch (err) {
                 console.error(err);
                 alert("Error claiming reward. Try again.");
