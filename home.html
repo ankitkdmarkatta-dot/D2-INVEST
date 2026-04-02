@@ -4,143 +4,190 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home | D2 INVEST</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="manifest" href="manifest.json">
     
     <style>
         :root {
             --primary: #0d2542;
-            --primary-light: #1a4a80;
             --accent: #f1c40f;
-            --bg-gradient: linear-gradient(135deg, #0d2542 0%, #1a4a80 100%);
-            --glass-bg: rgba(255, 255, 255, 0.95);
-            --text-dark: #333;
             --success: #10b981;
-            --cyan-glow: #00ffff;
+            --text-dark: #1e293b;
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: #f4f7f6; color: var(--text-dark); padding-bottom: 90px; overflow-x: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: #f8fafc; color: var(--text-dark); padding-bottom: 100px; }
 
+        /* --- MODERN HEADER --- */
         header {
-            background: var(--glass-bg); padding: 10px 20px;
+            background: #fff; padding: 15px 20px;
             display: flex; align-items: center; justify-content: space-between;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000;
+            position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 15px rgba(0,0,0,0.04);
         }
-        .logo-area { display: flex; align-items: center; gap: 12px; }
-        .logo-container { width: 45px; height: 45px; padding: 2px; border-radius: 50%; background: var(--accent); }
-        .logo-inner { width: 100%; height: 100%; background: #fff; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid #fff; }
-        .logo-inner img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-        .brand-text { color: var(--primary); font-weight: 800; font-size: 18px; letter-spacing: 1px; }
+        .logo-area { display: flex; align-items: center; gap: 10px; }
+        .logo-area img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--accent); }
+        .brand-text { font-weight: 800; font-size: 18px; color: var(--primary); letter-spacing: -0.5px; }
+        
+        /* --- IMPORTANT MESSAGE MARQUEE --- */
+        .announcement-bar {
+            background: #fff9e6; color: #856404; padding: 8px 0;
+            font-size: 12px; font-weight: 700; border-bottom: 1px solid #ffeeba;
+        }
 
-        main { max-width: 500px; margin: 20px auto; padding: 0 15px; }
+        main { max-width: 500px; margin: 0 auto; padding: 15px; }
 
-        /* --- BALANCE CARD --- */
-        .balance-card { background: var(--bg-gradient); border-radius: 25px; padding: 30px 20px; color: white; text-align: center; box-shadow: 0 10px 25px rgba(13, 37, 66, 0.3); position: relative; overflow: hidden; animation: slideIn 0.8s ease-out; }
-        .bal-label { font-size: 13px; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; }
-        .bal-amount { font-size: 34px; font-weight: 800; margin: 5px 0; color: var(--accent); }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 15px; backdrop-filter: blur(5px); }
-        .stat-box h4 { font-size: 16px; color: #fff; margin-top: 4px; }
-        .stat-box p { font-size: 10px; opacity: 0.7; text-transform: uppercase; font-weight: 600; }
+        /* --- PREMUIM BALANCE CARD --- */
+        .balance-card {
+            background: linear-gradient(135deg, #0d2542 0%, #1e4a80 100%);
+            border-radius: 24px; padding: 30px 20px; color: white;
+            position: relative; overflow: hidden; box-shadow: 0 15px 35px rgba(13, 37, 66, 0.25);
+        }
+        .balance-card::before {
+            content: ''; position: absolute; top: -50%; right: -50%;
+            width: 200px; height: 200px; background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+        .bal-label { font-size: 12px; opacity: 0.7; font-weight: 600; text-transform: uppercase; }
+        .bal-amount { font-size: 36px; font-weight: 800; margin: 8px 0; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .stats-row { 
+            display: flex; justify-content: space-between; margin-top: 25px; 
+            padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .stat-item p { font-size: 10px; opacity: 0.6; margin-bottom: 4px; }
+        .stat-item h4 { font-size: 16px; font-weight: 700; color: var(--accent); }
 
         /* --- CLAIM NOTIFICATION --- */
-        #claim-notify { display: none; background: #fff3cd; padding: 15px; border-radius: 15px; margin-top: 20px; border: 1px solid #ffeeba; cursor: pointer; animation: pulse 2s infinite; }
-        .claim-flex { display: flex; align-items: center; gap: 12px; }
-
-        /* --- INFO SECTIONS --- */
-        .info-section { background: white; border-radius: 20px; padding: 20px; margin-top: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; }
-        .info-section h3 { color: var(--primary); font-size: 17px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
-        .info-section h3 i { color: var(--accent); }
-        .info-content { font-size: 13.5px; line-height: 1.6; color: #555; }
-        .status-tag { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 5px 12px; border-radius: 50px; font-size: 11px; font-weight: 700; margin-top: 10px; border: 1px solid #c8e6c9; }
-
-        /* --- INSTALL POPUP --- */
-        #pwa-install-banner {
-            position: fixed; bottom: 85px; left: 10px; right: 10px;
-            background: #0d2542; border: 2px solid var(--cyan-glow);
-            border-radius: 15px; padding: 12px 15px;
-            display: none; align-items: center; justify-content: space-between;
-            z-index: 2000; box-shadow: 0 5px 20px rgba(0,255,255,0.2);
-            animation: slideUp 0.5s ease;
+        #claim-notify {
+            display: none; background: linear-gradient(90deg, #fff, #fff9e6);
+            padding: 15px; border-radius: 16px; margin-top: 15px;
+            border: 1px solid var(--accent); box-shadow: var(--card-shadow);
+            animation: pulse 2s infinite; cursor: pointer;
         }
-        .pwa-info { display: flex; align-items: center; gap: 10px; }
-        .pwa-close-btn { color: #fff; font-size: 20px; cursor: pointer; padding-right: 10px; }
-        .pwa-app-icon { width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--cyan-glow); }
-        .pwa-text-area h4 { font-size: 13px; margin: 0; color: white; }
-        .pwa-text-area p { font-size: 10px; margin: 0; color: #aaa; }
-        .pwa-install-btn { background: var(--cyan-glow); color: #000; border: none; padding: 7px 18px; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; }
 
-        /* --- NAV --- */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; height: 75px; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -5px 25px rgba(0,0,0,0.08); z-index: 1000; }
-        .nav-link { text-decoration: none; color: #94a3b8; text-align: center; flex: 1; font-size: 11px; }
-        .nav-link i { font-size: 22px; display: block; margin-bottom: 4px; }
+        /* --- VISUAL INFO CARDS (IMAGES REPLACEMENT) --- */
+        .feature-grid { margin-top: 25px; display: grid; gap: 15px; }
+        .feature-card {
+            background: #fff; border-radius: 20px; padding: 15px;
+            display: flex; align-items: center; gap: 15px;
+            box-shadow: var(--card-shadow); border: 1px solid #f1f5f9;
+        }
+        .feature-icon-box {
+            width: 55px; height: 55px; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; flex-shrink: 0;
+        }
+        .secure-bg { background: #e0f2fe; color: #0284c7; }
+        .fast-bg { background: #fef3c7; color: #d97706; }
+        .gift-bg { background: #dcfce7; color: #16a34a; }
+        
+        .feature-info h3 { font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 2px; }
+        .feature-info p { font-size: 12px; color: #64748b; line-height: 1.4; }
+
+        /* --- INSTALL BANNER --- */
+        #pwa-install-banner {
+            position: fixed; bottom: 85px; left: 15px; right: 15px;
+            background: #0d2542; border-radius: 16px; padding: 12px 15px;
+            display: none; align-items: center; justify-content: space-between;
+            z-index: 2000; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .pwa-install-btn { background: var(--accent); border: none; padding: 8px 20px; border-radius: 10px; font-weight: 800; font-size: 12px; }
+
+        /* --- NAVIGATION --- */
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 75px;
+            background: #fff; display: flex; justify-content: space-around; align-items: center;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 1000;
+        }
+        .nav-link { text-decoration: none; color: #94a3b8; text-align: center; font-size: 10px; font-weight: 600; }
+        .nav-link i { font-size: 22px; display: block; margin-bottom: 4px; transition: 0.3s; }
         .nav-link.active { color: var(--primary); }
+        .nav-link.active i { transform: translateY(-5px); color: var(--primary); }
 
-        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+        @keyframes pulse { 0% { transform: translateY(0); } 50% { transform: translateY(-5px); } 100% { transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo-area">
-            <div class="logo-container">
-                <div class="logo-inner"><img src="d2 logo.png" alt="D2" onerror="this.parentElement.innerHTML='<b>D2</b>'"></div>
-            </div>
+            <img src="d2 logo.png" alt="Logo">
             <div class="brand-text">D2 INVEST</div>
         </div>
-        <div id="welcome-user" style="font-size: 12px; font-weight: 700; color: var(--primary); background: #f0f4f8; padding: 6px 12px; border-radius: 10px;">Hi, User</div>
+        <div id="welcome-user" style="font-size: 11px; font-weight: 800; background: #f1f5f9; padding: 6px 12px; border-radius: 20px; color: var(--primary);">Hi, User</div>
     </header>
+
+    <div class="announcement-bar">
+        <marquee scrollamount="5"><i class="fa-solid fa-bell"></i> IMPORTANT: Market is highly bullish today. Withdrawals are processed within 10 minutes. Invite friends and earn ₹500 instant!</marquee>
+    </div>
 
     <main>
         <div class="balance-card">
-            <p class="bal-label">Portfolio Balance</p>
+            <p class="bal-label">Active Portfolio</p>
             <h1 class="bal-amount" id="user-balance">₹ 0.00</h1>
-            <div class="stats-grid">
-                <div class="stat-box"><p>Total Invested</p><h4 id="user-invested">₹ 0</h4></div>
-                <div class="stat-box" style="border-left: 1px solid rgba(255,255,255,0.2);"><p>Total Earnings</p><h4 id="user-profit" style="color: var(--accent);">₹ 0</h4></div>
+            
+            <div class="stats-row">
+                <div class="stat-item">
+                    <p>Total Invested</p>
+                    <h4 id="user-invested">₹ 0</h4>
+                </div>
+                <div class="stat-item" style="text-align: right;">
+                    <p>Net Profit</p>
+                    <h4 id="user-profit">₹ 0</h4>
+                </div>
             </div>
         </div>
 
         <div id="claim-notify" onclick="window.location.href='account.html'">
-            <div class="claim-flex">
-                <i class="fa-solid fa-coins" style="font-size: 24px; color: #856404;"></i>
-                <div class="claim-text"><b>Daily Profit Ready!</b><p style="font-size: 11px;">Click here to collect your daily income.</p></div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="font-size: 28px;">💰</div>
+                <div>
+                    <b style="font-size: 14px; color: #856404;">Profit Settlement Ready!</b>
+                    <p style="font-size: 11px; color: #856404; opacity: 0.8;">Your daily returns have been generated.</p>
+                </div>
             </div>
         </div>
 
-        <div class="info-section">
-            <h3><i class="fa-solid fa-shield-halved"></i> 100% Secure Trading</h3>
-            <div class="info-content">
-                Aapka capital AI-driven technical infrastructure mein secure rehta hai. D2 INVEST market ki sabse fast growth ka bharosa deta hai.
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon-box secure-bg">
+                    <i class="fa-solid fa-shield-check"></i>
+                </div>
+                <div class="feature-info">
+                    <h3>Secure Assets</h3>
+                    <p>Aapka capital encrypted servers aur AI monitoring se safe hai.</p>
+                </div>
             </div>
-            <div class="status-tag"><i class="fa-solid fa-circle-check"></i> System Verified</div>
-        </div>
 
-        <div class="info-section" style="border-left: 5px solid var(--accent);">
-            <h3><i class="fa-solid fa-bolt"></i> Instant Withdrawals</h3>
-            <div class="info-content">
-                Apne profit ko kisi bhi waqt seedha apne bank account mein transfer karein. No hidden charges, pure transparency.
+            <div class="feature-card">
+                <div class="feature-icon-box fast-bg">
+                    <i class="fa-solid fa-bolt-lightning"></i>
+                </div>
+                <div class="feature-info">
+                    <h3>Fast Withdrawal</h3>
+                    <p>Instant payout system. Ek click mein paisa bank account mein.</p>
+                </div>
             </div>
-        </div>
 
-        <div class="info-section">
-            <h3><i class="fa-solid fa-gift"></i> Referral Bonus</h3>
-            <div class="info-content">
-                Dosto ko invite karein aur har referral par ₹50 se ₹500 tak ka instant bonus payein. Team banayein, zyada kamayein!
+            <div class="feature-card">
+                <div class="feature-icon-box gift-bg">
+                    <i class="fa-solid fa-users-gear"></i>
+                </div>
+                <div class="feature-info">
+                    <h3>Network Rewards</h3>
+                    <p>Dosto ko invite karein aur passive income ka maza lein.</p>
+                </div>
             </div>
         </div>
     </main>
 
     <div id="pwa-install-banner">
-        <div class="pwa-info">
-            <span class="pwa-close-btn" id="close-banner">&times;</span>
-            <img src="d2 logo.png" class="pwa-app-icon" alt="Logo">
-            <div class="pwa-text-area">
-                <h4>D2 INVEST APP</h4>
-                <p>Fast Investing Experience</p>
+        <div style="display: flex; align-items: center; gap: 12px; color: white;">
+            <span id="close-banner" style="font-size: 20px;">&times;</span>
+            <img src="d2 logo.png" style="width: 35px; border-radius: 8px;">
+            <div>
+                <h4 style="font-size: 12px;">D2 INVEST APP</h4>
+                <p style="font-size: 9px; opacity: 0.6;">High-Speed Experience</p>
             </div>
         </div>
         <button class="pwa-install-btn" id="install-btn">Install</button>
@@ -158,7 +205,6 @@
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Updated Firebase config for d2-invest
         const firebaseConfig = {
             apiKey: "AIzaSyDHjoV-8VeURo26qpor9b_ED41h3uATgG8",
             authDomain: "d2-invest.firebaseapp.com",
@@ -173,7 +219,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- PWA LOGIC (Session Based) ---
+        // PWA LOGIC
         let deferredPrompt;
         const banner = document.getElementById('pwa-install-banner');
 
@@ -198,13 +244,13 @@
             sessionStorage.setItem('pwaClosedInSession', 'true');
         });
 
-        // --- DATA LOGIC (Original) ---
+        // AUTH & DATA LOGIC
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 onSnapshot(doc(db, "users", user.uid), (docSnap) => {
                     if (docSnap.exists()) {
                         const data = docSnap.data();
-                        document.getElementById('welcome-user').innerText = "Hi, " + (data.name || "User");
+                        document.getElementById('welcome-user').innerText = "Hi, " + (data.fullName?.split(' ')[0] || "User");
                         document.getElementById('user-balance').innerText = "₹ " + (data.balance || 0).toLocaleString('en-IN', {minimumFractionDigits: 2});
                         document.getElementById('user-invested').innerText = "₹ " + (data.totalInvested || 0).toLocaleString('en-IN');
                         document.getElementById('user-profit').innerText = "₹ " + (data.totalEarnings || 0).toLocaleString('en-IN');
@@ -218,7 +264,6 @@
                     }
                 });
             } else {
-                sessionStorage.removeItem('pwaClosedInSession');
                 window.location.href = "login.html";
             }
         });
