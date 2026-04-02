@@ -106,9 +106,9 @@
 
     <p class="section-title"><i class="fa-solid fa-qrcode" style="color: var(--accent);"></i> 2. Scan & Pay</p>
     <div class="qr-card">
-        <img id="dynamic-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=everyday9invest@axl&pn=D2%20INVEST&am=300&cu=INR" alt="QR Code" class="qr-img">
+        <img id="dynamic-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=investpro4449@axl&pn=D2%20INVEST&am=300&cu=INR" alt="QR Code" class="qr-img">
         <div class="upi-copy-box">
-            <span id="upi-id" style="font-size: 13px; font-weight: 700; color: var(--primary);">everyday9invest@axl</span>
+            <span id="upi-id" style="font-size: 13px; font-weight: 700; color: var(--primary);">investpro4449@axl</span>
             <button class="copy-btn" onclick="copyUPI()">COPY ID</button>
         </div>
         <button class="submit-btn" style="background: var(--primary); color: white; margin-top: 15px; padding: 12px;" onclick="redirectToUPI()">
@@ -167,7 +167,7 @@
     const customInp = document.getElementById('custom-input');
 
     window.updateQR = (amt) => {
-        const qrData = `upi://pay?pa=everyday9invest@axl&pn=D2%20INVEST&am=${amt}&cu=INR`;
+        const qrData = `upi://pay?pa=investpro4449@axl&pn=D2%20INVEST&am=${amt}&cu=INR`;
         qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrData)}`;
     };
 
@@ -186,13 +186,13 @@
     };
 
     window.copyUPI = () => {
-        navigator.clipboard.writeText("everyday9invest@axl");
+        navigator.clipboard.writeText("investpro4449@axl");
         alert("UPI ID Copied!");
     };
 
     window.redirectToUPI = () => {
         if(!selectedAmount || selectedAmount < 1) return alert("Enter Amount!");
-        window.location.href = `upi://pay?pa=everyday9invest@axl&pn=D2%20INVEST&am=${selectedAmount}&cu=INR`;
+        window.location.href = `upi://pay?pa=investpro4449@axl&pn=D2%20INVEST&am=${selectedAmount}&cu=INR`;
     };
 
     window.submitDeposit = async () => {
