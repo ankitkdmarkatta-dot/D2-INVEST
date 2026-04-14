@@ -60,11 +60,6 @@
         .tab-view { display: none; }
         .tab-view.active { display: block; }
 
-        /* Input Styling for Add Plan */
-        .plan-input {
-            width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #ddd; outline: none;
-        }
-
         .pay-details-box { background: #fdf9e7; padding: 10px; border-radius: 8px; font-size: 11px; line-height: 1.5; color: #333; border-left: 3px solid var(--accent); }
 
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
@@ -87,8 +82,6 @@
     <div class="nav-link" onclick="switchTab('users-list', this)"><i class="fa-solid fa-users"></i> All Users</div>
     <div class="nav-link" onclick="switchTab('deposits', this)"><i class="fa-solid fa-plus-circle"></i> Deposits</div>
     <div class="nav-link" onclick="switchTab('withdrawals', this)"><i class="fa-solid fa-minus-circle"></i> Withdrawals</div>
-    <div class="nav-link" onclick="switchTab('manage-plans', this)"><i class="fa-solid fa-layer-group"></i> Manage Plans</div>
-    
     <div class="nav-link" style="margin-top: auto; color: #ff7675;" onclick="adminLogout()"><i class="fa-solid fa-power-off"></i> Logout</div>
 </div>
 
@@ -99,29 +92,6 @@
             <div class="stat-card"><span>Total Members</span><h2 id="total-users">0</h2></div>
             <div class="stat-card"><span>Today's Deposit</span><h2 id="today-dep-sum">₹0</h2></div>
             <div class="stat-card"><span>Total Deposits</span><h2 id="total-dep-sum">₹0</h2></div>
-        </div>
-    </div>
-
-    <div id="manage-plans" class="tab-view">
-        <h1 style="margin-bottom: 20px;">Investment Plans Control</h1>
-        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
-            <div class="table-card" style="height: fit-content;">
-                <h3 style="margin-bottom: 15px;">Add New Plan</h3>
-                <input type="text" id="p-name" class="plan-input" placeholder="Plan Name (e.g., Fuel Mini)">
-                <input type="number" id="p-price" class="plan-input" placeholder="Price (₹)">
-                <input type="number" id="p-daily" class="plan-input" placeholder="Daily Income (₹)">
-                <input type="number" id="p-days" class="plan-input" placeholder="Days (e.g., 10)">
-                <input type="text" id="p-img" class="plan-input" placeholder="Image URL">
-                <button class="btn-act btn-approve" style="width: 100%; padding: 12px;" onclick="addInvestmentPlan()">SAVE PLAN</button>
-            </div>
-            
-            <div class="table-card">
-                <h3 style="margin-bottom: 15px;">Live Plans</h3>
-                <table>
-                    <thead><tr><th>Plan Name</th><th>Price</th><th>Daily</th><th>Action</th></tr></thead>
-                    <tbody id="plans-table-body"></tbody>
-                </table>
-            </div>
         </div>
     </div>
 
@@ -174,7 +144,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, doc, updateDoc, increment, query, where, writeBatch, serverTimestamp, getDocs, getDoc, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, doc, updateDoc, increment, query, where, writeBatch, serverTimestamp, getDocs, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDHjoV-8VeURo26qpor9b_ED41h3uATgG8",
@@ -202,48 +172,6 @@
         document.getElementById(tabId).classList.add('active');
         el.classList.add('active');
     };
-
-    // --- MANAGE PLANS LOGIC ---
-    window.addInvestmentPlan = async () => {
-        const name = document.getElementById('p-name').value;
-        const price = parseFloat(document.getElementById('p-price').value);
-        const daily = parseFloat(document.getElementById('p-daily').value);
-        const days = parseInt(document.getElementById('p-days').value);
-        const img = document.getElementById('p-img').value;
-
-        if(!name || !price || !daily || !days) return alert("Please fill all details!");
-
-        try {
-            await addDoc(collection(db, "investment_plans"), {
-                name, price, daily, days, img: img || "logo.png",
-                totalReturn: daily * days,
-                createdAt: serverTimestamp()
-            });
-            alert("New Plan Added Successfully!");
-            document.querySelectorAll('.plan-input').forEach(i => i.value = "");
-        } catch (e) { alert("Error adding plan: " + e.message); }
-    };
-
-    onSnapshot(collection(db, "investment_plans"), snap => {
-        const body = document.getElementById('plans-table-body');
-        body.innerHTML = "";
-        snap.forEach(d => {
-            const data = d.data();
-            body.innerHTML += `<tr>
-                <td>${data.name}</td>
-                <td>₹${data.price}</td>
-                <td>₹${data.daily}</td>
-                <td><button class="btn-act btn-delete" onclick="deletePlan('${d.id}')">DELETE</button></td>
-            </tr>`;
-        });
-    });
-
-    window.deletePlan = async (id) => {
-        if(!confirm("Delete this investment plan?")) return;
-        try { await deleteDoc(doc(db, "investment_plans", id)); alert("Plan Removed!"); } 
-        catch (e) { alert("Error: " + e.message); }
-    };
-    // --- END MANAGE PLANS LOGIC ---
 
     // Real-time Stats
     onSnapshot(query(collection(db, "deposits"), where("status", "==", "success")), (snap) => {
