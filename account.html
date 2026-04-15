@@ -15,6 +15,7 @@
             --white: #ffffff;
             --success: #27ae60;
             --danger: #e74c3c;
+            --telegram: #0088cc;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
@@ -92,8 +93,17 @@
         .modal-content {
             background: white; width: 100%; max-width: 350px;
             border-radius: 25px; padding: 25px; animation: pop 0.3s ease;
+            text-align: center;
         }
         .modal-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; margin: 15px 0; outline: none; }
+
+        .btn-tg { 
+            background: var(--telegram); color: white; width: 100%; 
+            padding: 15px; border-radius: 15px; border: none; 
+            font-weight: 700; display: flex; align-items: center; 
+            justify-content: center; gap: 10px; text-decoration: none;
+            margin-top: 15px;
+        }
 
         .logout-btn { width: 100%; background: #fff; color: var(--danger); border: none; padding: 15px; border-radius: 15px; font-weight: 700; margin-top: 10px; cursor: pointer; border: 1px solid #fee2e2; }
 
@@ -169,6 +179,14 @@
                 </div>
                 <i class="fa-solid fa-chevron-right" style="color:#ccc; font-size:12px;"></i>
             </div>
+
+            <div class="list-item" onclick="openHelpModal()">
+                <div class="item-info">
+                    <div class="item-icon" style="background:#fdf2f2; color:#e02424;"><i class="fa-solid fa-headset"></i></div>
+                    <div class="item-text"><b style="display:block; font-size:14px;">Help & Support</b><span style="font-size:11px; color:#999;">Contact Agent for Queries</span></div>
+                </div>
+                <i class="fa-solid fa-chevron-right" style="color:#ccc; font-size:12px;"></i>
+            </div>
         </div>
 
         <button class="logout-btn" id="logout-btn"><i class="fa-solid fa-power-off"></i> LOGOUT ACCOUNT</button>
@@ -180,6 +198,20 @@
             <input type="password" id="new-pass-inp" class="modal-input" placeholder="New Password (min 6 chars)">
             <button class="action-btn btn-deposit" style="width: 100%;" onclick="saveNewPass()">UPDATE</button>
             <button style="width: 100%; border: none; background: none; margin-top: 15px; color: #999; cursor: pointer;" onclick="document.getElementById('pass-modal').style.display='none'">CANCEL</button>
+        </div>
+    </div>
+
+    <div class="modal" id="help-modal">
+        <div class="modal-content">
+            <i class="fa-brands fa-telegram" style="font-size: 50px; color: var(--telegram); margin-bottom: 10px;"></i>
+            <h3 style="margin-bottom: 5px;">Customer Support</h3>
+            <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Facing issues? Click below to chat with our official agent on Telegram.</p>
+            
+            <a href="https://t.me/Agent4449win" class="btn-tg" target="_blank">
+                <i class="fa-brands fa-telegram"></i> CHAT WITH AGENT
+            </a>
+            
+            <button style="width: 100%; border: none; background: none; margin-top: 20px; color: #999; cursor: pointer; font-weight: 600;" onclick="document.getElementById('help-modal').style.display='none'">CLOSE</button>
         </div>
     </div>
 
@@ -195,7 +227,6 @@
         import { getAuth, onAuthStateChanged, signOut, updatePassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Your Updated Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDHjoV-8VeURo26qpor9b_ED41h3uATgG8",
             authDomain: "d2-invest.firebaseapp.com",
@@ -269,7 +300,10 @@
             }
         };
 
+        // Modal Functions
         window.openPassModal = () => document.getElementById('pass-modal').style.display='flex';
+        window.openHelpModal = () => document.getElementById('help-modal').style.display='flex';
+
         window.saveNewPass = async () => {
             const p = document.getElementById('new-pass-inp').value;
             if(p.length < 6) return alert("Password too short!");
