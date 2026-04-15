@@ -55,6 +55,7 @@
         .btn-approve { background: #27ae60; color: white; }
         .btn-reject { background: #e74c3c; color: white; margin-left: 4px; }
         .btn-view { background: #3498db; color: white; margin-right: 4px;}
+        .btn-edit { background: #f39c12; color: white; margin-right: 4px;}
         .btn-delete { background: #000; color: #ff4757; border: 1px solid #ff4757; }
 
         .tab-view { display: none; }
@@ -194,17 +195,40 @@
         body.innerHTML = "";
         snap.forEach(u => {
             const data = u.data();
+            const balance = data.balance || 0;
             body.innerHTML += `<tr>
                 <td>${u.id.substring(0,8)}...</td>
                 <td>${data.email || data.phone || 'N/A'}</td>
-                <td>₹${(data.balance || 0).toFixed(2)}</td>
+                <td>₹${parseFloat(balance).toFixed(2)}</td>
                 <td>
                     <button class="btn-act btn-view" onclick="viewUser('${u.id}')">VIEW</button>
+                    <button class="btn-act btn-edit" onclick="editUserBalance('${u.id}', ${balance})">EDIT BAL</button>
                     <button class="btn-act btn-delete" onclick="deleteUserAccount('${u.id}')">DELETE</button>
                 </td>
             </tr>`;
         });
     });
+
+    // Edit User Balance Logic
+    window.editUserBalance = async (uid, currentBal) => {
+        const newBal = prompt("Enter new balance for this user:", currentBal);
+        if (newBal === null || newBal === "") return; // Cancelled
+
+        const parsedBal = parseFloat(newBal);
+        if (isNaN(parsedBal)) {
+            alert("Please enter a valid number!");
+            return;
+        }
+
+        try {
+            await updateDoc(doc(db, "users", uid), {
+                balance: parsedBal
+            });
+            alert("Balance updated successfully!");
+        } catch (e) {
+            alert("Error updating balance: " + e.message);
+        }
+    };
 
     window.viewUser = async (uid) => {
         document.getElementById('userModal').style.display = 'block';
