@@ -260,10 +260,25 @@
                         
                         if(userData.activePlans && userData.activePlans.length > 0) {
                             let totalDaily = 0;
-                            userData.activePlans.forEach(p => totalDaily += parseFloat(p.daily));
+                            const now = new Date();
+
+                            // Logic to check expiry and calculate only valid plans
+                            userData.activePlans.forEach(p => {
+                                const purchaseDate = new Date(p.purchaseDate);
+                                const diffInTime = now.getTime() - purchaseDate.getTime();
+                                const diffInDays = diffInTime / (1000 * 3600 * 24);
+
+                                if (diffInDays <= p.days) {
+                                    totalDaily += parseFloat(p.daily);
+                                }
+                            });
+
                             document.getElementById('ready-profit').innerText = "₹ " + totalDaily.toFixed(2);
 
-                            if(userData.lastClaimDate === today) {
+                            if(totalDaily <= 0) {
+                                btn.innerText = "NO ACTIVE PLAN";
+                                btn.disabled = true;
+                            } else if(userData.lastClaimDate === today) {
                                 btn.innerText = "CLAIMED";
                                 btn.disabled = true;
                             } else {
@@ -272,6 +287,7 @@
                             }
                         } else {
                             document.getElementById('ready-profit').innerText = "₹ 0.00";
+                            btn.innerText = "CLAIM";
                             btn.disabled = true;
                         }
                     }
@@ -284,16 +300,38 @@
             btn.disabled = true; btn.innerText = "Saving...";
 
             let totalDaily = 0;
-            userData.activePlans.forEach(p => totalDaily += parseFloat(p.daily));
+            const now = new Date();
+            let hasExpired = false;
+
+            // Step 1: Calculate income from valid (non-expired) plans
+            const validPlans = userData.activePlans.filter(p => {
+                const purchaseDate = new Date(p.purchaseDate);
+                const diffInTime = now.getTime() - purchaseDate.getTime();
+                const diffInDays = diffInTime / (1000 * 3600 * 24);
+                
+                if (diffInDays <= p.days) {
+                    totalDaily += parseFloat(p.daily);
+                    return true;
+                } else {
+                    hasExpired = true; // Mark that at least one plan is gone
+                    return false;
+                }
+            });
 
             try {
                 const userRef = doc(db, "users", auth.currentUser.uid);
+                
+                // Update Firestore
                 await updateDoc(userRef, {
                     balance: increment(totalDaily),
                     totalEarnings: increment(totalDaily),
-                    lastClaimDate: new Date().toDateString()
+                    lastClaimDate: new Date().toDateString(),
+                    activePlans: validPlans // Automatically remove expired plans from the list
                 });
-                alert("₹" + totalDaily + " claimed successfully!");
+
+                alert("₹" + totalDaily.toFixed(2) + " claimed successfully!");
+                if(hasExpired) alert("Note: Some of your plans have expired and been removed.");
+
             } catch(e) { 
                 alert("Error: " + e.message);
                 btn.disabled = false; btn.innerText = "CLAIM";
